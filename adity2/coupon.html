@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coupon - Multi Mart Store</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1c1d1e;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #e80606 100%);
+    }
+    .notification {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #4caf50; /* Green */
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      z-index: 1000;
+    }
+    .deal-card {
+      transition: transform 0.2s;
+    }
+    .deal-card:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Notification -->
+<div id="notification" class="notification">Coupon applied successfully!</div>
+
+<!-- Navigation Bar -->
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/76865a68-f7ef-477b-8c9d-c0954338721a.png" alt="SuperMart Logo" class="rounded-full w-10 h-10" />
+      <div class="leading-tight">
+        <div class="text-xl font-bold">SuperMart</div>
+        <div class="text-xs text-gray-200 ml-1 tracking-wide">Coupons</div>
+      </div>
+    </div>
+    <div class="relative">
+      <a href="cart.html" class="flex items-center text-gray-200 hover:text-white">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l1.5 6H15l1.5-6M6 19a1 1 0 11-2 0 1 1 0 012 0zm12 0a1 1 0 11-2 0 1 1 0 012 0z" />
+        </svg>
+        <span id="cart-count" class="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Coupon Section -->
+<!-- Urgent Delivery Banner -->
+<div class="bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 p-4 mt-4 rounded-lg shadow-lg animate-pulse">
+  <h1 class="text-white text-center text-xl font-bold tracking-wide drop-shadow-lg">
+    🎉 Coupon Applied! Now Get 30% Discount 😛
+  </h1>
+</div>
+<br>
+  <div class="flex justify-center mb-4">
+    <input type="text" id="coupon-code" placeholder="Enter coupon code" class="border border-gray-300 rounded p-2" />
+    <button onclick="applyCoupon()" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition ml-2">Apply</button>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    <!-- Discount Item 1 -->
+    <div class="bg-white rounded-lg shadow-lg p-4 deal-card">
+      <img src="https://via.placeholder.com/300" alt="Discount 1" class="w-full h-48 object-cover rounded-t-lg mb-2" />
+      <h3 class="text-xl font-bold mb-2">Discount Item 1</h3>
+      <p class="text-gray-600 mb-4">Get 30% off on this amazing product. Limited time offer!</p>
+      <span id="price-1" class="text-lg font-bold text-red-600">₹500</span>
+      <div class="mt-4 flex justify-between">
+        <button onclick="addToCart('Discount Item 1', 500)" class="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition">Add to Cart</button>
+        <button onclick="buyNow('Discount Item 1', 500)" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">Buy Now</button>
+      </div>
+    </div>
+
+    <!-- Discount Item 2 -->
+    <div class="bg-white rounded-lg shadow-lg p-4 deal-card">
+      <img src="https://via.placeholder.com/300" alt="Discount 2" class="w-full h-48 object-cover rounded-t-lg mb-2" />
+      <h3 class="text-xl font-bold mb-2">Discount Item 2</h3>
+      <p class="text-gray-600 mb-4">Flat 20% off on selected items. Hurry up!</p>
+      <span id="price-2" class="text-lg font-bold text-red-600">₹400</span>
+      <div class="mt-4 flex justify-between">
+        <button onclick="addToCart('Discount Item 2', 400)" class="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition">Add to Cart</button>
+        <button onclick="buyNow('Discount Item 2', 400)" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">Buy Now</button>
+      </div>
+    </div>
+
+    <!-- Discount Item 3 -->
+    <div class="bg-white rounded-lg shadow-lg p-4 deal-card">
+      <img src="https://via.placeholder.com/300" alt="Discount 3" class="w-full h-48 object-cover rounded-t-lg mb-2" />
+      <h3 class="text-xl font-bold mb-2">Discount Item 3</h3>
+      <p class="text-gray-600 mb-4">Get 15% off on this fantastic product. Limited time offer!</p>
+      <span id="price-3" class="text-lg font-bold text-red-600">₹300</span>
+      <div class="mt-4 flex justify-between">
+        <button onclick="addToCart('Discount Item 3', 300)" class="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition">Add to Cart</button>
+        <button onclick="buyNow('Discount Item 3', 300)" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">Buy Now</button>
+      </div>
+    </div>
+
+    <!-- Add more discount items as needed -->
+
+  </div>
+</div>
+
+<!-- BOTTOM NAVIGATION FIXED MENU -->
+<div class="fixed bottom-0 left-0 right-0 bg-white shadow-md border-t flex justify-around items-center py-2 z-50">
+  <a href="index.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M4 10v10h5v-6h6v6h5V10" />
+    </svg>
+    Home
+  </a>
+  <a href="cart.html" class="relative flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l1.5 6H15l1.5-6M6 19a1 1 0 11-2 0 1 1 0 012 0zm12 0a1 1 0 11-2 0 1 1 0 012 0z" />
+    </svg>
+    <span id="cart-count-bottom" class="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1">0</span>
+    Cart
+  </a>
+  <a href="orders.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m-6-8h6m2-4h2a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+    </svg>
+    Orders
+  </a>
+  <a href="menu.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+    Menu
+  </a>
+</div>
+
+<script>
+  let discountApplied = false; // Track if a discount has been applied
+
+  function applyCoupon() {
+    const couponCode = document.getElementById('coupon-code').value;
+    const discountPercentage = 30; // Example discount percentage
+    const items = [
+      { id: 'price-1', originalPrice: 500 },
+      { id: 'price-2', originalPrice: 400 },
+      { id: 'price-3', originalPrice: 300 }
+    ];
+
+    // Check if the coupon code is valid
+    if (couponCode === "ADITYA CHUTIYA B2") { // Example coupon code
+      discountApplied = true; // Set discount applied to true
+      items.forEach(item => {
+        const discountedPrice = item.originalPrice - (item.originalPrice * (discountPercentage / 100));
+        document.getElementById(item.id).textContent = `₹${discountedPrice.toFixed(2)}`;
+        item.discountedPrice = discountedPrice; // Store discounted price
+      });
+
+      // Show notification
+      const notification = document.getElementById('notification');
+      notification.style.display = 'block';
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000); // Hide after 3 seconds
+    } else {
+      alert("Invalid coupon code. Please try again.");
+    }
+  }
+
+  function addToCart(itemName, originalPrice) {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const index = cart.findIndex(item => item.name === itemName);
+    let priceToUse = originalPrice;
+
+    // If discount is applied, use the discounted price
+    if (discountApplied) {
+      const items = [
+        { name: 'Discount Item 1', discountedPrice: 500 - (500 * 0.30) },
+        { name: 'Discount Item 2', discountedPrice: 400 - (400 * 0.20) },
+        { name: 'Discount Item 3', discountedPrice: 300 - (300 * 0.15) }
+      ];
+      const item = items.find(i => i.name === itemName);
+      if (item) {
+        priceToUse = item.discountedPrice; // Use discounted price
+      }
+    }
+
+    if (index !== -1) {
+      cart[index].quantity += 1; // Increment quantity if item already exists
+    } else {
+      cart.push({ name: itemName, price: priceToUse, quantity: 1 }); // Add new item with discounted price
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount(); // Update cart count
+  }
+
+  function buyNow(itemName, originalPrice) {
+    let priceToUse = originalPrice;
+
+    // If discount is applied, use the discounted price
+    if (discountApplied) {
+      const items = [
+        { name: 'Discount Item 1', discountedPrice: 500 - (500 * 0.30) },
+        { name: 'Discount Item 2', discountedPrice: 400 - (400 * 0.20) },
+        { name: 'Discount Item 3', discountedPrice: 300 - (300 * 0.15) }
+      ];
+      const item = items.find(i => i.name === itemName);
+      if (item) {
+        priceToUse = item.discountedPrice; // Use discounted price
+      }
+    }
+
+    // Redirect to the checkout page or handle the buy now logic
+    alert(`Redirecting to checkout for ${itemName} at ₹${priceToUse}`);
+    // You can implement the actual checkout logic here
+  }
+
+  function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const countSpans = document.querySelectorAll("#cart-count, #cart-count-bottom");
+    countSpans.forEach(span => span.textContent = totalQty);
+  }
+
+  // On Page Load
+  window.onload = function () {
+    updateCartCount(); // Sync cart count on page load
+  };
+</script>
+
+</body>
+</html>

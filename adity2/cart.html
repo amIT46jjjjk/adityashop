@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi Mart Store | Cart</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7fa;
+      overflow-x: hidden;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #e80606 100%);
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #ffffff;
+      border-top: 1px solid #ccc;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 50;
+    }
+    .bottom-nav a {
+      font-size: 12px;
+      color: #4B5563;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bottom-nav a:hover {
+      color: #7C3AED;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/76865a68-f7ef-477b-8c9d-c0954338721a.png" alt="SuperMart Logo" class="rounded-full w-10 h-10" />
+      <div class="leading-tight">
+        <div class="text-xl font-bold">SuperMart</div>
+        <div class="text-xs text-gray-200 ml-1 tracking-wide">Offers and Deals</div>
+      </div>
+    </div>
+    <div class="flex items-center space-x-4">
+      <a href="#notifications" aria-label="Notifications">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white hover:text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V5a1 1 0 10-2 0v.083A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+      </a>
+      <a href="cart.html" class="relative flex items-center">
+        <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" class="w-6 h-6" />
+        <span id="cart-count-top" class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Bar -->
+<div class="px-4 py-2">
+  <div class="flex items-center w-full border border-gray-300 rounded overflow-hidden">
+    <input type="text" id="searchInput" placeholder="Search for products..." class="flex-grow p-2 outline-none" />
+    <button class="text-gray-500 px-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
+      </svg>
+    </button>
+    <button onclick="startVoiceSearch()" class="bg-purple-600 text-white px-3 py-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10 2a2 2 0 00-2 2v6a2 2 0 004 0V4a2 2 0 00-2-2z" />
+        <path d="M5 10a5 5 0 0010 0h-1a4 4 0 01-8 0H5z" />
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- Deals Nav Section -->
+<div class="bg-black py-3 mt-2">
+  <div class="flex justify-start space-x-6 pl-4 text-sm font-medium text-white">
+    <a href="#" class="hover:underline">Today's Deals</a>
+    <a href="#" class="hover:underline">Offers</a>
+    <a href="#" class="hover:underline">Discounts</a>
+  </div>
+</div>
+
+<!-- Subtotal Box -->
+<div class="max-w-xl mx-auto bg-white border border-gray-300 rounded shadow p-4 mb-4">
+  <p class="text-lg font-semibold">Subtotal <span id="subtotalAmount" class="text-black text-2xl font-bold ml-2">₹0</span></p>
+  <p id="deliveryText" class="text-sm mt-1 text-green-600 flex items-center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+    </svg>
+    Add items worth ₹500+ for FREE Delivery.
+  </p>
+</div>
+
+<!-- Cart Items List -->
+<div class="w-full max-w-md mx-auto px-4 sm:px-6 lg:px-8">
+  <div id="cartItems" class="space-y-4"></div>
+</div>
+
+<!-- Summary Section -->
+<div class="mt-6 bg-white rounded p-4 shadow">
+  <div class="flex flex-wrap justify-between items-center mb-2">
+    <span class="w-1/2 sm:w-auto">Total Amount:</span>
+    <span id="totalAmount" class="text-right w-1/2 sm:w-auto">₹0</span>
+  </div>
+
+  <div class="flex flex-wrap justify-between items-center mb-2">
+    <span class="w-1/2 sm:w-auto">Delivery Fee:</span>
+    <span id="deliveryFee" class="text-right w-1/2 sm:w-auto">₹0</span>
+  </div>
+
+  <div class="flex flex-wrap justify-between items-center mb-2">
+    <span class="w-1/2 sm:w-auto">Coupon Applied:</span>
+    <span id="couponValue" class="text-right w-1/2 sm:w-auto text-green-600">- ₹0</span>
+  </div>
+
+  <hr class="my-2" />
+
+  <div class="flex flex-wrap justify-between items-center font-bold text-lg">
+    <span class="w-1/2 sm:w-auto">Grand Total:</span>
+    <span id="grandTotal" class="text-right w-1/2 sm:w-auto text-purple-700">₹0</span>
+  </div>
+
+  <a href="address.html">
+    <button onclick="placeOrder()" class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
+      Place Your Order
+    </button>
+  </a>
+</div>
+
+            
+<!-- Full Width Slider -->
+<div class="w-full overflow-hidden mt-4 rounded-lg shadow-lg">
+  <div id="slider" class="flex transition-transform duration-700 ease-in-out">
+    
+    <!-- Slide 1 -->
+    <div class="flex-shrink-0 w-full flex flex-col items-center">
+      <img src="https://thumbs.dreamstime.com/b/mother-daughter-grocery-store-178991395.jpg" 
+           class="w-full h-52 object-cover" />
+      <div class="text-white bg-black bg-opacity-70 text-sm font-bold w-full text-center py-2">
+        -20% OFF
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="flex-shrink-0 w-full flex flex-col items-center">
+      <img src="https://thumbs.dreamstime.com/b/family-shopping-various-fresh-vegetables-supermarket-cheerful-spanish-family-shopping-various-fresh-vegetables-supermarket-226691565.jpg" 
+           class="w-full h-52 object-cover" />
+      <div class="text-white bg-black bg-opacity-70 text-sm font-bold w-full text-center py-2">
+        -30% OFF
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="flex-shrink-0 w-full flex flex-col items-center">
+      <img src="https://gs.apnamart.in/store/store_258/list/DSC_0320.JPG" 
+           class="w-full h-52 object-cover" />
+      <div class="text-white bg-black bg-opacity-70 text-sm font-bold w-full text-center py-2">
+        -15% OFF
+      </div>
+    </div>
+
+  </div>
+</div>
+
+      <!-- Product 1: Tide -->
+      <div class="border rounded p-4 shadow relative bg-white">
+        <!-- BEST SALE badge -->
+        <div class="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded animate-pulse">BEST SALE</div>
+
+        <!-- Product Image -->
+        <img src="https://m.media-amazon.com/images/I/61Eflfx5rlL._AC_UF1000,1000_QL80_FMwebp_.jpg"
+             class="w-full h-auto object-contain mb-2 rounded"
+             alt="Tide 5kg">
+
+        <!-- Product Info -->
+        <h3 class="text-md font-semibold text-gray-800">Tide 5kg</h3>
+        <p class="text-sm text-red-600 font-bold mb-1">Discount / Bestseller</p>
+        <p class="text-sm">
+          <span class="line-through text-gray-500">₹700</span>
+          <span class="text-green-600 font-bold text-lg">₹600</span>
+        </p>
+
+        <!-- Notification Box -->
+        <div id="notify-Tide" class="text-xs bg-green-500 text-white px-2 py-1 mt-2 rounded shadow hidden w-fit">✅ Added to Cart</div>
+
+        <!-- Action Buttons -->
+        <div class="flex space-x-2 mt-3">
+          <button onclick="addToCart('Tide 5kg', 600, 'https://m.media-amazon.com/images/I/61Eflfx5rlL._AC_UF1000,1000_QL80_FMwebp_.jpg', 'notify-Tide')"
+                  class="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded-full text-sm font-semibold">
+            ➕ Add to Cart
+          </button>
+          <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
+            ⚡ Buy Now
+          </button>
+        </div>
+      </div>
+
+      <!-- Product 2: Dove -->
+      <div class="border rounded p-4 shadow relative bg-white">
+        <!-- BEST SALE badge -->
+        <div class="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded animate-pulse">BEST SALE</div>
+
+        <!-- Product Image -->
+        <img src="https://cdn.grofers.com/app/assets/products/sliding_images/jpeg/6a8bd8f9-eafd-4d3e-a330-d76e37f04954.jpg?ts=1712292161"
+             class="w-full h-auto object-contain mb-2 rounded"
+             alt="Dove Soap 8 Pack">
+
+        <!-- Product Info -->
+        <h3 class="text-md font-semibold text-gray-800">Dove Soap 8 Pack</h3>
+        <p class="text-sm text-red-600 font-bold mb-1">Discount = 23% / Bestseller</p>
+        <p class="text-sm">
+          <span class="line-through text-gray-500">₹770</span>
+          <span class="text-green-600 font-bold text-lg">₹700</span>
+        </p>
+
+        <!-- Notification Box -->
+        <div id="notify-Dove" class="text-xs bg-green-500 text-white px-2 py-1 mt-2 rounded shadow hidden w-fit">✅ Added to Cart</div>
+
+        <!-- Action Buttons -->
+        <div class="flex space-x-2 mt-3">
+          <button onclick="addToCart('Dove Soap 8 Pack', 700, 'https://cdn.grofers.com/app/assets/products/sliding_images/jpeg/6a8bd8f9-eafd-4d3e-a330-d76e37f04954.jpg?ts=1712292161', 'notify-Dove')"
+                  class="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded-full text-sm font-semibold">
+            ➕ Add to Cart
+          </button>
+          <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
+            ⚡ Buy Now
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  
+    <!-- Footer -->
+    <footer id="contact" class="gradient-bg text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <!-- About -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">SuperMart</h3>
+                    <p class="mb-4">Your one-stop shop for all daily needs with best quality and prices from A to Z.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="bg-white text-purple-600 rounded-full w-10 h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="#" class="bg-white text-purple-600 rounded-full w-10 h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="#" class="bg-white text-purple-600 rounded-full w-10 h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="#" class="bg-white text-purple-600 rounded-full w-10 h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:underline">Home</a></li>
+                        <li><a href="#" class="hover:underline">About Us</a></li>
+                        <li><a href="#" class="hover:underline">Products</a></li>
+                        <li><a href="#" class="hover:underline">Offers</a></li>
+                        <li><a href="#" class="hover:underline">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Categories -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Categories</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:underline">Grocery</a></li>
+                        <li><a href="#" class="hover:underline">Electronics</a></li>
+                        <li><a href="#" class="hover:underline">Fashion</a></li>
+                        <li><a href="#" class="hover:underline">Home & Kitchen</a></li>
+                        <li><a href="#" class="hover:underline">Beauty</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Contact Us</h3>
+                    <address class="not-italic">
+                        <p class="mb-2">MULTI MART STORE , 335512</p>
+                        <p class="mb-2">Email: deepuvarietystore873@gmail.com</p>
+                        <p>Phone: +91 89556 22801</p>
+                        <p>Phone: +91 88529 09296</p>
+                    </address>
+                </div>
+            </div>
+            
+            <div class="border-t border-white border-opacity-20 pt-8 text-center">
+                <p>© 2023 SuperMart. All Rights Reserved.</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+<footer class="bg-gray-900 text-white py-6 mt-12">
+  <div class="container mx-auto px-4 text-center">
+    <p class="text-sm mb-1">💻 Development by <span class="font-semibold text-purple-400">Amit</span></p>
+    <p class="text-xs">
+      📞 Contact: <a href="tel:8963021388" class="underline hover:text-purple-300">8963021388</a>
+    </p>
+  </div>
+</footer>
+    </footer>
+
+
+
+<!-- BOTTOM NAVIGATION FIXED MENU -->
+<div class="fixed bottom-0 left-0 right-0 bg-white shadow-md border-t flex justify-around items-center py-2 z-50">
+  <a href="index.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M4 10v10h5v-6h6v6h5V10" />
+    </svg>
+    Home
+  </a>
+  <a href="cart.html" class="relative flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l1.5 6H15l1.5-6M6 19a1 1 0 11-2 0 1 1 0 012 0zm12 0a1 1 0 11-2 0 1 1 0 012 0z" />
+    </svg>
+    Cart
+    <span id="cart-count-bottom" class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-1.5">0</span>
+  </a>
+  <a href="orders.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m-6-8h6m2-4h2a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+    </svg>
+    Orders
+  </a>
+  <a href="menu.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+    Menu
+  </a>
+</div>
+
+<script>
+
+  
+function updateCart() {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const cartItemsContainer = document.getElementById('cartItems');
+  cartItemsContainer.innerHTML = '';
+  let totalAmount = 0;
+
+  cart.forEach((item, index) => {
+    const itemTotal = item.price * item.quantity;
+    totalAmount += itemTotal;
+
+    const itemDiv = document.createElement('div');
+    itemDiv.className = 'flex border rounded-lg shadow p-4 gap-4 bg-white items-start';
+
+    itemDiv.innerHTML = `
+      <img src="${item.image}" alt="${item.name}" class="w-24 h-24 object-cover rounded border" />
+      <div class="flex-1">
+        <h3 class="text-md font-bold text-gray-800">${item.name}</h3>
+        <p class="text-sm text-gray-500 mt-1 line-through">MRP: ₹${item.mrp || (item.price + 100)}</p>
+        <p class="text-sm text-green-600 font-semibold">Deal Price: ₹${item.price}</p>
+        <p class="text-xs text-green-700 mt-1">✅ 24 Hours Returnable</p>
+        <div class="mt-3 flex items-center space-x-2">
+          <button onclick="decreaseQuantity(${index})" class="bg-gray-300 px-3 py-1 rounded font-bold">-</button>
+          <span class="w-6 text-center font-medium">${item.quantity}</span>
+          <button onclick="increaseQuantity(${index})" class="bg-gray-300 px-3 py-1 rounded font-bold">+</button>
+          <button onclick="removeFromCart(${index})" class="ml-4 bg-red-600 text-white px-3 py-1 rounded">Remove</button>
+        </div>
+      </div>
+      <div class="text-right text-gray-700 font-semibold min-w-[60px]">₹${itemTotal}</div>
+    `;
+
+    cartItemsContainer.appendChild(itemDiv);
+  });
+
+  // Update subtotal and totals
+  document.getElementById('subtotalAmount').innerText = `₹${totalAmount}`;
+  document.getElementById('totalAmount').innerText = `₹${totalAmount}`;
+  document.getElementById('cart-count-top').innerText = cart.length;
+  document.getElementById('cart-count-bottom').innerText = cart.length;
+
+  // Delivery Fee
+  const deliveryFee = totalAmount >= 500 ? 0 : 50;
+  document.getElementById('deliveryFee').innerText = `₹${deliveryFee}`;
+
+  // Grand Total
+  const grandTotal = totalAmount + deliveryFee;
+  document.getElementById('grandTotal').innerText = `₹${grandTotal}`;
+}
+
+function removeFromCart(index) {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cart.splice(index, 1);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCart();
+}
+
+function changeQuantity(index, delta) {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  if (cart[index]) {
+ let newQty = cart[index].quantity + delta;
+    if (newQty <= 0) newQty = 1;
+    if (newQty > 5) newQty = 5; // limit to 5
+    cart[index].quantity = newQty;
+  }
+  localStorage.setItem('cart', JSON.stringify(cart));
+  updateCart();
+}
+
+function increaseQuantity(index) {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  if (cart[index].quantity < 5) {  // Quantity limit 5
+    cart[index].quantity += 1;
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCart();
+  } else {
+    alert("Maximum 5 items allowed per product.");
+  }
+}
+
+function decreaseQuantity(index) {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  if (cart[index].quantity > 1) {
+    cart[index].quantity -= 1;
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCart();
+  } else {
+    removeFromCart(index);  // Auto remove if 1->0
+  }
+}
+
+window.onload = function () {
+  updateCart();
+};
+
+function addToCart(item) {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const existingItemIndex = cart.findIndex(cartItem => cartItem.name === item.name);
+  
+  if (existingItemIndex > -1) {
+    cart[existingItemIndex].quantity += 1;
+  } else {
+    item.quantity = 1; // Set initial quantity
+    cart.push(item);
+  }
+  
+  localStorage.setItem('cart', JSON.stringify(cart));
+  updateCart();
+}
+
+itemDiv.innerHTML = `
+  <!-- Product Image -->
+  <img src="${item.image}" alt="${item.name}" class="w-full h-40 object-cover rounded mb-4">
+
+  <!-- Product Info -->
+  <div class="text-left">
+    <h3 class="text-lg font-bold text-gray-800">${item.name}</h3>
+    <p class="text-sm text-gray-500 line-through">MRP: ₹${item.mrp || item.price + 100}</p>
+    <p class="text-sm text-green-600 font-semibold">Deal Price: ₹${item.price}</p>
+    <p class="text-xs text-green-700 mt-1">✅ 24 Hours Returnable</p>
+
+    <!-- Quantity Controls + Remove Button -->
+    <div class="mt-3 flex justify-between items-center">
+      <div class="flex space-x-2 items-center">
+        <button onclick="decreaseQuantity(${index})" class="bg-gray-300 px-3 py-1 rounded font-bold">-</button>
+        <span class="w-6 text-center font-medium">${item.quantity}</span>
+        <button onclick="increaseQuantity(${index})" class="bg-gray-300 px-3 py-1 rounded font-bold">+</button>
+      </div>
+      <button onclick="removeFromCart(${index})" class="ml-4 bg-red-600 text-white px-3 py-1 rounded">Remove</button>
+    </div>
+
+    <!-- Total Price below Quantity -->
+    <div class="mt-3 text-right font-semibold text-purple-700">
+      Total: ₹${item.price * item.quantity}
+    </div>
+  </div>
+`;
+
+
+</script>
+
+<script>
+  let currentSlide = 0;
+  const slides = document.querySelectorAll("#slider > div");
+  const mainSlider = document.getElementById("slider");
+
+  function showSlide(index) {
+    const offset = index * -100;
+    mainSlider.style.transform = `translateX(${offset}%)`;
+  }
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % slides.length;
+    showSlide(currentSlide);
+  }
+
+  setInterval(nextSlide, 3000); // Auto slide every 3s
+
+ 
+ 
+ 
+</script>
+
+
+<script>
+// Cart functionality
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+function updateCart() {
+  const cartItemsContainer = document.getElementById('cartItems');
+  cartItemsContainer.innerHTML = '';
+  let totalAmount = 0;
+
+  cart.forEach((item, index) => {
+    const itemTotal = item.price * item.quantity;
+    totalAmount += itemTotal;
+
+    const itemDiv = document.createElement('div');
+    itemDiv.className = 'flex bg-white border-2 border-gray-100 rounded-xl p-6 gap-6 items-start mb-5 shadow-sm hover:shadow-md transition-all duration-200';
+
+    itemDiv.innerHTML = `
+      <div class="flex flex-col items-center">
+        <img src="${item.image}" alt="${item.name}" class="w-40 h-40 object-contain rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200" />
+        <div class="flex items-center border rounded-lg overflow-hidden mt-2">
+          <button onclick="changeQuantity(${index}, -1)" class="bg-gray-100 px-3 py-1 font-bold text-gray-700 hover:bg-gray-200">-</button>
+          <span class="px-3 py-1 font-medium bg-white">${item.quantity}</span>
+          <button onclick="changeQuantity(${index}, 1)" class="bg-gray-100 px-3 py-1 font-bold text-gray-700 hover:bg-gray-200">+</button>
+        </div>
+      </div>
+      <div class="flex-1 space-y-3">
+        <h3 class="text-xl font-bold text-gray-800 tracking-wide">${item.name}</h3>
+        <div class="flex items-baseline gap-2">
+          <span class="text-sm text-gray-500 line-through">₹${item.mrp || item.price + 50}</span>
+          <span class="text-green-600 font-bold text-xl">- ₹${item.price}</span>
+        </div>
+        <p class="text-sm text-green-600 font-medium tracking-wide">✅ 24 Hours Returnable</p>
+                <button onclick="removeFromCart(${index})" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 ml-2">Remove</button>
+      </div>
+    `;
+
+    cartItemsContainer.appendChild(itemDiv);
+  });   
+  // Update totals
+  document.getElementById('subtotalAmount').textContent = `₹${totalAmount}`;
+  document.getElementById('totalAmount').textContent = `₹${totalAmount}`;
+  document.getElementById('cart-count-top').textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+  document.getElementById('cart-count-bottom').textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+  
+  // Delivery calculation
+  const deliveryFee = totalAmount >= 500 ? 0 : 50;
+  document.getElementById('deliveryFee').textContent = `₹${deliveryFee}`;
+  document.getElementById('grandTotal').textContent = `₹${totalAmount + deliveryFee}`;
+}
+
+function changeQuantity(index, change) {
+  const newQuantity = cart[index].quantity + change;
+  if (newQuantity < 1) return;
+  if (newQuantity > 5) {
+    alert("Maximum 5 items per product");
+    return;
+  }
+  cart[index].quantity = newQuantity;
+  localStorage.setItem('cart', JSON.stringify(cart));
+  updateCart();
+}
+
+function removeFromCart(index) {
+  cart.splice(index, 1);
+  localStorage.setItem('cart', JSON.stringify(cart));
+  updateCart();
+}
+
+
+
+// Initialize
+updateCart();
+</script>
+
+<script>
+  // ✅ Add to Cart logic (reusable)
+  function addToCart(name, price, image) {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const existingIndex = cart.findIndex(item => item.name === name);
+
+    if (existingIndex !== -1) {
+      cart[existingIndex].quantity += 1;
+    } else {
+      cart.push({ name, price, image, quantity: 1 });
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount(); // ✅ Update cart number on icon
+    showNotification(`${name} added to cart!`);
+  }
+
+  // ✅ Show notification (you can style this too)
+  function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.className = 'fixed top-16 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg z-50 animate-bounce';
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+      notification.remove();
+    }, 2000);
+  }
+
+  // ✅ On Page Load
+  window.onload = function () {
+    updateCartCount(); // sync cart count on page load
+  };
+</script>
+
+<script>
+function showNotification(id) {
+  const notify = document.getElementById(id);
+  if (notify) {
+    notify.classList.remove("hidden");
+    setTimeout(() => {
+      notify.classList.add("hidden");
+    }, 2000);
+  }
+}
+
+function addToCart(name, price, image, notifyId = null) {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const index = cart.findIndex(item => item.name === name);
+
+  if (index !== -1) {
+    cart[index].quantity += 1;
+  } else {
+    cart.push({ name, price, image, quantity: 1 });
+  }
+
+  localStorage.setItem('cart', JSON.stringify(cart));
+  updateCartCount();
+  if (notifyId) showNotification(notifyId);
+}
+
+function updateCartCount() {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const countSpans = document.querySelectorAll("#cart-count, #cart-count-bottom");
+  countSpans.forEach(span => span.textContent = totalQty);
+}
+</script>
+
+
+</body>
+</html>

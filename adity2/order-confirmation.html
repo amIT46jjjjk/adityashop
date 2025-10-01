@@ -1,0 +1,141 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi Mart Store | Order Confirmation</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7fa;
+    }
+  </style>
+</head>
+<body><!-- Navigation Bar --><nav class="bg-gradient-to-r from-green-500 to-lime-500 text-white sticky top-0 z-50 shadow-lg">
+  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/76865a68-f7ef-477b-8c9d-c0954338721a.png" alt="SuperMart Logo" class="rounded-full w-10 h-10" />
+      <div class="leading-tight">
+        <div class="text-xl font-bold">SuperMart</div>
+        <div class="text-xs text-gray-200 ml-1 tracking-wide">Thank you for shopping!</div>
+      </div>
+    </div>
+  </div>
+</nav><!-- Order Success Box --><div class="max-w-md mx-auto bg-white shadow-lg rounded-lg mt-10 p-6 text-center">
+  <h2 class="text-xl font-bold text-green-600 mb-4">🎉 Order Placed Successfully!</h2>
+  <p class="text-gray-600">Redirecting to your orders...</p>
+</div><script>
+  const addressData = JSON.parse(localStorage.getItem("deliveryAddress")) || {
+    name: "",
+    mobile: "",
+    flat: "",
+    area: "",
+    pincode: ""
+  };
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const tip = parseInt(localStorage.getItem("selectedTip")) || 0;
+  const deliveryFee = 50;
+  const totalPrice = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+
+  let orderId = localStorage.getItem("lastOrderId") || 1000008830;
+  orderId++;
+  localStorage.setItem("lastOrderId", orderId);
+
+  const fullAddress = `${addressData.flat}, ${addressData.area}, ${addressData.pincode}`;
+  const finalAmount = totalPrice + deliveryFee + tip;
+
+  const orderData = {
+    orderId,
+    name: addressData.name,
+    phone: addressData.mobile,
+    address: fullAddress,
+    items: cart,
+    tip: tip,
+    delivery: deliveryFee,
+    total: finalAmount
+  };
+
+  fetch("http://localhost:5000/send", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(orderData)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      const myOrders = JSON.parse(localStorage.getItem("myOrders")) || [];
+      myOrders.push({
+        id: orderId,
+        items: cart,
+        status: "pending",
+        date: new Date().toLocaleString(),
+        price: totalPrice,
+        tip: tip,
+        delivery: deliveryFee,
+        total: finalAmount,
+        paymentMethod: "COD",
+        deliveryTime: new Date(Date.now() + 45 * 60000).toLocaleString()
+      });
+      localStorage.setItem("myOrders", JSON.stringify(myOrders));
+      localStorage.removeItem("cart");
+      localStorage.removeItem("selectedTip");
+
+      localStorage.setItem("orderNotification", "yes");
+      localStorage.setItem("orderNotificationMsg", `Your order #${orderId} is placed and pending confirmation.`);
+
+      setTimeout(() => {
+        window.location.href = "orders.html";
+      }, 3000);
+    } else {
+      alert("❌ Order failed. Please try again.");
+    }
+  })
+  .catch(err => {
+    console.error("Order Send Error:", err);
+    alert("⚠️ Error sending order. Check your connection or try again.");
+  });
+</script>
+<script>
+function placeOrder() {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const address = JSON.parse(localStorage.getItem("deliveryAddress")) || {
+    name: "Amit",
+    phone: "7339924681",
+    address: "Hanumangarh, Rajasthan"
+  };
+
+  const orderId = Date.now().toString(); // Unique Order ID
+
+  const order = {
+    orderId: orderId,
+    name: address.name,
+    phone: address.mobile || address.phone || "Unknown",
+    address: `${address.flat || ""}, ${address.area || ""}, ${address.pincode || ""}`,
+    items: cart
+  };
+
+  // ✅ Save order status locally in 'myOrders'
+  const myOrders = JSON.parse(localStorage.getItem("myOrders")) || [];
+  myOrders.push({ ...order, status: "pending", date: new Date().toLocaleString(), deliveryTime: "45 min", paymentMethod: "COD" });
+  localStorage.setItem("myOrders", JSON.stringify(myOrders));
+
+  // ✅ Send to backend Flask
+  fetch("https://e6f52184de9c.ngrok-free.app/send", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(order)
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("✅ Sent to backend:", data);
+    window.location.href = "order-confirmation.html";
+  })
+  .catch(err => {
+    console.error("❌ Failed to send order", err);
+    alert("Something went wrong!");
+  });
+}
+</script>
+</body>
+</html>
+

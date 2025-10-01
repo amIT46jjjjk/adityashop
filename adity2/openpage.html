@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Grocery - Multi Mart Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f4f6; /* Light background for better contrast */
+      margin: 0;
+      padding: 0;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #e80606 100%);
+    }
+    .notification {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #fbbf24;
+      color: black;
+      padding: 10px 20px;
+      border-radius: 5px;
+      z-index: 1000;
+    }
+    .product-card {
+      flex: 0 0 auto;
+      width: 200px;
+      margin-right: 1rem;
+      background: white;
+      border-radius: 0.375rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .product-card:hover {
+      transform: scale(1.03);
+    }
+    .accordion {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    }
+    .accordion-header {
+      cursor: pointer;
+      padding: 14px 16px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      font-size: 16px;
+      transition: background 0.2s;
+    }
+    .accordion-content {
+      padding: 16px;
+      display: none;
+      border-top: 1px solid #eee;
+      background-color: #fff;
+      font-size: 15px;
+    }
+    .arrow {
+      transition: transform 0.3s ease;
+      font-size: 16px;
+    }
+    .rotate {
+      transform: rotate(90deg);
+    }
+    .slider {
+      position: relative;
+      overflow: hidden;
+      border-radius: 0.375rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .slider img {
+      width: 100%;
+      height: auto;
+      transition: transform 0.5s ease;
+    }
+    .slider-buttons {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+    }
+    .slider-button {
+      background-color: rgba(255, 255, 255, 0.7);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 10px;
+      transition: background-color 0.3s;
+    }
+    .slider-button:hover {
+      background-color: rgba(255, 255, 255, 1);
+    }
+  </style>
+</head>
+<body class="bg-white">
+
+  <!-- Notification -->
+  <div id="notification" class="notification">Item successfully added to cart!</div>
+
+  <!-- Navigation Bar -->
+  <nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/76865a68-f7ef-477b-8c9d-c0954338721a.png" alt="SuperMart Logo" class="rounded-full w-10 h-10" />
+        <div class="leading-tight">
+          <div class="text-xl font-bold">SuperMart</div>
+          <div class="text-xs text-gray-200 ml-1 tracking-wide">Beauty</div>
+        </div>
+      </div>
+      <div class="relative">
+        <a href="cart.html" class="flex items-center text-gray-200 hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l1.5 6H15l1.5-6M6 19a1 1 0 11-2 0 1 1 0 012 0zm12 0a1 1 0 11-2 0 1 1 0 012 0z" />
+          </svg>
+          <span id="cart-count" class="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1">0</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Search Bar -->
+  <div class="container mx-auto mt-4 px-4">
+    <div class="flex items-center w-full border border-gray-300 rounded overflow-hidden bg-pink-200">
+      <input 
+        type="text" 
+        id="searchInput" 
+        placeholder="Search for products..." 
+        class="flex-grow p-3 outline-none min-w-0 text-sm" 
+      />
+      <button class="text-gray-500 p-2 flex-shrink-0" onclick="searchProduct()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Product Detail Section -->
+  <main class="max-w-5xl mx-auto p-4 bg-white mt-4 rounded-xl shadow-lg">
+    <h2 class="text-2xl font-bold mb-2">Red Bull Energy Drink 250ml</h2>
+    <p class="text-sm text-gray-600 mb-4">Get wings instantly! Perfect for energy boost during long days or workouts.</p>
+
+    <!-- Image Slider -->
+    <div class="slider">
+      <img id="sliderImage" src="Cream/5.jpg" alt="Product Image">
+      <div class="slider-buttons">
+        <button class="slider-button" onclick="prevImage()">❮</button>
+        <button class="slider-button" onclick="nextImage()">❯</button>
+      </div>
+    </div>
+
+    <script>
+      const images = ["Cream/31.jpeg", "Cream/32.jpeg", "Cream/33.jpeg", "Cream/34.jpeg", "Cream/29.jpeg"];
+      let currentIndex = 0;
+
+      function showImage(index) {
+        const sliderImage = document.getElementById("sliderImage");
+        sliderImage.src = images[index];
+      }
+
+      function nextImage() {
+        currentIndex = (currentIndex + 1) % images.length;
+        showImage(currentIndex);
+      }
+
+      function prevImage() {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        showImage(currentIndex);
+      }
+
+      // Initialize first image
+      showImage(currentIndex);
+    </script>
+
+    <div class="mb-4">
+      <p class="text-lg font-semibold text-green-600">₹100 <span class="text-sm text-gray-500 line-through ml-2">₹120</span></p>
+      <p class="text-xs text-gray-500">3K+ bought in past month</p>
+    </div>
+    <ul class="text-sm text-gray-700 space-y-1 mb-4">
+      <li>✅ Free Delivery</li>
+      <li>💰 Cash on Delivery</li>
+      <li>🚫 Non-Returnable</li>
+      <li>📦 Delivered by Deepu Store</li>
+    </ul>
+    <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded w-full mb-4" onclick="addToCart('Red Bull Energy Drink 250ml', 100)">
+      Add to Cart
+    </button>
+
+    <!-- Accordion Section -->
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        Product details
+        <span class="arrow">▶</span>
+      </div>
+      <div class="accordion-content">
+        <h4>Top highlights</h4>
+        <ul>
+          <li>Can it remove stains?</li>
+          <li>Is it safe for coloured clothes?</li>
+          <li>Does it have a fresh scent?</li>
+          <li>Can it be used in a top load?</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        Product specifications
+        <span class="arrow">▶</span>
+      </div>
+      <div class="accordion-content">
+        <ul>
+          <li>Volume: 1L</li>
+          <li>Form: Liquid</li>
+          <li>Usage: Top/Front Load</li>
+          <li>Scent: Fresh Clean</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        About the Brand
+        <span class="arrow">▶</span>
+      </div>
+      <div class="accordion-content">
+        <p>This product is manufactured by Deepu Variety Store — trusted by over 50K+ families.</p>
+      </div>
+    </div>
+
+    <!-- Popular Products Section -->
+    <div class="mt-8 bg-[#fffbea] p-4 rounded">
+      <h2 class="text-lg font-bold mb-2">Related Products</h2>
+      <div class="flex overflow-x-auto">
+        <div class="product-card">
+          <img src="adi.png" alt="Product 1" class="h-36 object-contain">
+          <h3 class="text-sm font-semibold mt-2">Product 1</h3>
+          <p class="text-red-600 font-bold text-sm">₹200</p>
+          <button class="bg-yellow-400 text-black font-bold rounded w-full mt-2 py-2" onclick="addToCart('Product 1', 200)">Add to cart</button>
+        </div>
+        <div class="product-card">
+          <img src="adi.png" alt="Product 2" class="h-36 object-contain">
+          <h3 class="text-sm font-semibold mt-2">Product 2</h3>
+          <p class="text-red-600 font-bold text-sm">₹250</p>
+          <button class="bg-yellow-400 text-black font-bold rounded w-full mt-2 py-2" onclick="addToCart('Product 2', 250)">Add to cart</button>
+        </div>
+        <div class="product-card">
+          <img src="adi.png" alt="Product 3" class="h-36 object-contain">
+          <h3 class="text-sm font-semibold mt-2">Product 3</h3>
+          <p class="text-red-600 font-bold text-sm">₹300</p>
+          <button class="bg-yellow-400 text-black font-bold rounded w-full mt-2 py-2" onclick="addToCart('Product 3', 300)">Add to cart</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function toggleAccordion(header) {
+      const content = header.nextElementSibling;
+      const arrow = header.querySelector('.arrow');
+
+      // Toggle current
+      if (content.style.display === "block") {
+        content.style.display = "none";
+        arrow.classList.remove("rotate");
+      } else {
+        content.style.display = "block";
+        arrow.classList.add("rotate");
+      }
+    }
+
+    function addToCart(productName, price) {
+      // Logic to add the product to the cart
+      alert(`${productName} added to cart for ₹${price}`);
+      document.getElementById("notification").style.display = "block";
+      setTimeout(() => {
+        document.getElementById("notification").style.display = "none";
+      }, 2000);
+    }
+
+    function searchProduct() {
+      const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+      // Simulate a search operation
+      alert(`Searching for: ${searchTerm}`);
+    }
+  </script>
+</body>
+</html>

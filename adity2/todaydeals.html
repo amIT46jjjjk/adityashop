@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Today's Deals - Multi Mart Store</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #303339;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #e80606 100%);
+    }
+    .notification {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      z-index: 1000;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .deal-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .deal-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      background-color: #f9f9f9; /* Light background on hover */
+    }
+    .button {
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .button:hover {
+      transform: translateY(-2px);
+    }
+    @media (max-width: 640px) {
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+      }
+      .deal-card {
+        margin: 0.25rem;
+      }
+      .deal-card img {
+        height: 120px;
+      }
+      .button {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Notification -->
+<div id="notification" class="notification">Item added to cart!</div>
+
+<!-- Navigation Bar -->
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/76865a68-f7ef-477b-8c9d-c0954338721a.png" alt="SuperMart Logo" class="rounded-full w-10 h-10" />
+      <div class="leading-tight">
+        <div class="text-xl font-bold">SuperMart</div>
+        <div class="text-xs text-gray-200 ml-1 tracking-wide">Offers and Deals</div>
+      </div>
+    </div>
+    <div class="flex items-center space-x-4">
+      <a href="#notifications" aria-label="Notifications">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white hover:text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V5a1 1 0 10-2 0v.083A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+      </a>
+      <a href="cart.html" class="relative flex items-center">
+        <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" class="w-6 h-6" alt="Cart Icon" />
+        <span id="cart-count-top" class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Urgent Delivery Banner -->
+<div class="bg-black p-4 mt-2 rounded">
+  <h2 class="text-white text-center text-lg font-bold tracking-wide">🏷️ TODAY'S DEALS</h2>
+</div>
+
+<!-- Deals Section -->
+<div class="container mx-auto mt-4 p-2">
+  <div class="product-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+
+    <!-- Deal Item 1 -->
+    <div class="bg-white rounded-lg shadow p-2 deal-card">
+      <img src="https://placehold.co/300x200" alt="Smartphone with large screen and premium design" class="w-full h-32 object-contain mb-1" />
+      <h3 class="text-sm font-bold mb-1 truncate">Smartphone X</h3>
+      <p class="text-xs text-gray-600 mb-2 line-clamp-2">Latest model with 128GB storage and 48MP camera</p>
+      <span class="text-sm font-bold text-red-600">₹15,999</span>
+      <div class="mt-2 flex justify-between space-x-1">
+        <button onclick="addToCart('Smartphone X', 15999)" class="bg-green-600 text-white py-1 px-2 rounded text-xs button hover:bg-green-700">Add</button>
+        <button onclick="buyNow('Smartphone X', 15999)" class="bg-blue-600 text-white py-1 px-2 rounded text-xs button hover:bg-blue-700">Buy</button>
+      </div>
+    </div>
+
+    <!-- Deal Item 2 -->
+    <div class="bg-white rounded-lg shadow p-2 deal-card">
+      <img src="https://placehold.co/300x200" alt="Wireless headphones with noise cancellation" class="w-full h-32 object-contain mb-1" />
+      <h3 class="text-sm font-bold mb-1 truncate">Wireless Headphones</h3>
+      <p class="text-xs text-gray-600 mb-2 line-clamp-2">Premium sound with 30hr battery life</p>
+      <span class="text-sm font-bold text-red-600">₹2,499</span>
+      <div class="mt-2 flex justify-between space-x-1">
+        <button onclick="addToCart('Wireless Headphones', 2499)" class="bg-green-600 text-white py-1 px-2 rounded text-xs button hover:bg-green-700">Add</button>
+        <button onclick="buyNow('Wireless Headphones', 2499)" class="bg-blue-600 text-white py-1 px-2 rounded text-xs button hover:bg-blue-700">Buy</button>
+      </div>
+    </div>
+
+    <!-- Deal Item 3 -->
+    <div class="bg-white rounded-lg shadow p-2 deal-card">
+      <img src="https://placehold.co/300x200" alt="Smart watch with fitness tracking features" class="w-full h-32 object-contain mb-1" />
+      <h3 class="text-sm font-bold mb-1 truncate">Smart Watch</h3>
+      <p class="text-xs text-gray-600 mb-2 line-clamp-2">Track your fitness with heart rate monitor</p>
+      <span class="text-sm font-bold text-red-600">₹3,999</span>
+      <div class="mt-2 flex justify-between space-x-1">
+        <button onclick="addToCart('Smart Watch', 3999)" class="bg-green-600 text-white py-1 px-2 rounded text-xs button hover:bg-green-700">Add</button>
+        <button onclick="buyNow('Smart Watch', 3999)" class="bg-blue-600 text-white py-1 px-2 rounded text-xs button hover:bg-blue-700">Buy</button>
+      </div>
+    </div>
+
+    <!-- Deal Item 4 -->
+    <div class="bg-white rounded-lg shadow p-2 deal-card">
+      <img src="https://placehold.co/300x200" alt="Bluetooth speaker with portable design" class="w-full h-32 object-contain mb-1" />
+      <h3 class="text-sm font-bold mb-1 truncate">Bluetooth Speaker</h3>
+      <p class="text-xs text-gray-600 mb-2 line-clamp-2">20W powerful sound with 10hr playback</p>
+      <span class="text-sm font-bold text-red-600">₹1,799</span>
+      <div class="mt-2 flex justify-between space-x-1">
+        <button onclick="addToCart('Bluetooth Speaker', 1799)" class="bg-green-600 text-white py-1 px-2 rounded text-xs button hover:bg-green-700">Add</button>
+        <button onclick="buyNow('Bluetooth Speaker', 1799)" class="bg-blue-600 text-white py-1 px-2 rounded text-xs button hover:bg-blue-700">Buy</button>
+      </div>
+    </div>
+
+    <!-- Deal Item 5 -->
+    <div class="bg-white rounded-lg shadow p-2 deal-card">
+      <img src="https://placehold.co/300x200" alt="Power bank with fast charging capability" class="w-full h-32 object-contain mb-1" />
+      <h3 class="text-sm font-bold mb-1 truncate">Power Bank</h3>
+      <p class="text-xs text-gray-600 mb-2 line-clamp-2">10000mAh with dual USB ports</p>
+      <span class="text-sm font-bold text-red-600">₹1,299</span>
+      <div class="mt-2 flex justify-between space-x-1">
+        <button onclick="addToCart('Power Bank', 1299)" class="bg-green-600 text-white py-1 px-2 rounded text-xs button hover:bg-green-700">Add</button>
+        <button onclick="buyNow('Power Bank', 1299)" class="bg-blue-600 text-white py-1 px-2 rounded text-xs button hover:bg-blue-700">Buy</button>
+      </div>
+    </div>
+
+    <!-- Deal Item 6 -->
+    <div class="bg-white rounded-lg shadow p-2 deal-card">
+      <img src="https://placehold.co/300x200" alt="Wireless earbuds with charging case" class="w-full h-32 object-contain mb-1" />
+      <h3 class="text-sm font-bold mb-1 truncate">Wireless Earbuds</h3>
+      <p class="text-xs text-gray-600 mb-2 line-clamp-2">True wireless with 24hr battery life</p>
+      <span class="text-sm font-bold text-red-600">₹1,499</span>
+      <div class="mt-2 flex justify-between space-x-1">
+        <button onclick="addToCart('Wireless Earbuds', 1499)" class="bg-green-600 text-white py-1 px-2 rounded text-xs button hover:bg-green-700">Add</button>
+        <button onclick="buyNow('Wireless Earbuds', 1499)" class="bg-blue-600 text-white py-1 px-2 rounded text-xs button hover:bg-blue-700">Buy</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<footer id="contact" class="gradient-bg text-white py-8 mt-4">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+      <div>
+        <h3 class="text-sm font-bold mb-2">SuperMart</h3>
+        <p class="text-xs mb-2">Your one-stop shop for all daily needs</p>
+      </div>
+      <div>
+        <h3 class="text-sm font-bold mb-2">Quick Links</h3>
+        <ul class="space-y-1 text-xs">
+          <li><a href="#" class="hover:underline">Home</a></li>
+          <li><a href="#" class="hover:underline">Products</a></li>
+          <li><a href="#" class="hover:underline">Offers</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-sm font-bold mb-2">Categories</h3>
+        <ul class="space-y-1 text-xs">
+          <li><a href="#" class="hover:underline">Electronics</a></li>
+          <li><a href="#" class="hover:underline">Fashion</a></li>
+          <li><a href="#" class="hover:underline">Home</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-sm font-bold mb-2">Contact</h3>
+        <address class="not-italic text-xs">
+          <p class="mb-1">MULTI MART STORE</p>
+          <p class="mb-1">Email: example@email.com</p>
+          <p>Phone: +91 XXXXX XXXXX</p>
+        </address>
+      </div>
+    </div>
+    <div class="border-t border-white border-opacity-20 pt-4 text-center text-xs">
+      <p>© 2023 SuperMart. All Rights Reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Bottom Navigation -->
+<div class="fixed bottom-0 left-0 right-0 bg-white shadow-md border-t flex justify-around items-center py-2 z-50">
+  <a href="index.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M4 10v10h5v-6h6v6h5V10" />
+    </svg>
+    Home
+  </a>
+  <a href="cart.html" class="relative flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l1.5 6H15l1.5-6M6 19a1 1 0 11-2 0 1 1 0 012 0zm12 0a1 1 0 11-2 0 1 1 0 012 0z" />
+    </svg>
+    <span id="cart-count-bottom" class="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1">0</span>
+    Cart
+  </a>
+  <a href="orders.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m-6-8h6m2-4h2a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+    </svg>
+    Orders
+  </a>
+  <a href="account.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    </svg>
+    Account
+  </a>
+</div>
+
+<script>
+  function addToCart(itemName, itemPrice) {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const index = cart.findIndex(item => item.name === itemName);
+
+    if (index !== -1) {
+      cart[index].quantity += 1;
+    } else cart.push({ name: itemName, price: itemPrice, quantity: 1 });
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+
+    const notification = document.getElementById('notification');
+    notification.style.display = 'block';
+    setTimeout(() => {
+      notification.style.display = 'none';
+    }, 2000);
+
+    updateCartCount();
+  
+
+  function buyNow(itemName, itemPrice) {
+    alert(`Redirecting to checkout for ${itemName} at ₹${itemPrice}`);
+  }
+
+  function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const countSpans = document.querySelectorAll("#cart-count-top, #cart-count-bottom");
+    countSpans.forEach(span => span.textContent = totalQty);
+  }
+
+  window.onload = function() {
+    updateCartCount();
+  };
+</script>
+
+</body>
+</html>

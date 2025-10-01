@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notifications - Multi Mart</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f9fafb;
+      overflow-x: hidden;
+    }
+    .badge {
+      font-size: 0.75rem;
+      padding: 2px 6px;
+      border-radius: 0.25rem;
+      font-weight: bold;
+    }
+    .accepted { background-color: #22c55e; color: white; }
+    .rejected { background-color: #ef4444; color: white; }
+    .delayed { background-color: #f97316; color: white; }
+    .pending { background-color: #facc15; color: black; }
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #e80606 100%);
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #ffffff;
+      border-top: 1px solid #ccc;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 50;
+    }
+    .bottom-nav a {
+      font-size: 12px;
+      color: #4B5563;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bottom-nav a:hover {
+      color: #7C3AED;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- Navigation Bar -->
+  <nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/76865a68-f7ef-477b-8c9d-c0954338721a.png" alt="SuperMart Logo" class="rounded-full w-10 h-10" />
+        <div class="leading-tight">
+          <div class="text-xl font-bold">SuperMart</div>
+          <div class="text-xs text-gray-200 ml-1 tracking-wide">Offers and Deals</div>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <a href="#notifications" aria-label="Notifications">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white hover:text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V5a1 1 0 10-2 0v.083A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+        </a>
+        <a href="cart.html" class="relative flex items-center">
+          <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" class="w-6 h-6" />
+          <span id="cart-count-top" class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5">0</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <div class="bg-gradient-to-r from-purple-600 to-red-500 text-white p-4 text-center text-xl font-bold">
+    🔔 Notifications (Total: <span id="notification-count">0</span>)
+  </div>
+  <center>
+    <button onclick="clearAllNotifications()" class="bg-red-500 text-white text-xs px-4 py-1 rounded mt-2 ml-4">
+      Clear All Notifications
+    </button>
+  </center>
+
+  <!-- Notifications Container -->
+  <div class="max-w-xl mx-auto p-4 space-y-4" id="notificationList">
+    <!-- JS will insert notifications here -->
+  </div>
+
+  <!-- No Notifications -->
+  <div id="emptyNotice" class="text-center text-gray-600 mt-10 hidden">
+    <p class="text-lg">😴 No new notifications</p>
+  </div>
+
+  <script>
+    const list = document.getElementById("notificationList");
+    const empty = document.getElementById("emptyNotice");
+    const notificationCount = document.getElementById("notification-count");
+
+    // Load notifications from localStorage
+    let notifs = JSON.parse(localStorage.getItem("notifications")) || [];
+    notificationCount.textContent = notifs.length; // Update notification count
+
+    if (notifs.length === 0) {
+      empty.classList.remove("hidden");
+    } else {
+      notifs.slice().reverse().forEach(n => {
+        const div = document.createElement("div");
+        let badgeClass = "";
+        let icon = "";
+
+        if (n.type === "accepted") {
+          badgeClass = "accepted";
+          icon = "✅";
+        } else if (n.type === "rejected") {
+          badgeClass = "rejected";
+          icon = "❌";
+        } else if (n.type === "delayed") {
+          badgeClass = "delayed";
+          icon = "⏳";
+        } else {
+          badgeClass = "pending";
+          icon = "🕒";
+        }
+
+        div.className = "bg-white shadow rounded p-4 flex justify-between items-center";
+        div.innerHTML = `
+          <div>
+            <p class="text-sm">${icon} ${n.message}</p>
+            <p class="text-xs text-gray-400 mt-1">${n.time}</p>
+          </div>
+          <span class="badge ${badgeClass}">${n.type.toUpperCase()}</span>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function clearAllNotifications() {
+      localStorage.removeItem('notifications');
+      list.innerHTML = ''; // Clear the notification list
+      notificationCount.textContent = '0'; // Reset count
+      empty.classList.remove("hidden"); // Show empty notice
+      alert("All notifications cleared."); // Feedback to user
+    }
+
+    function pushNotification(type, message) {
+      const notifs = JSON.parse(localStorage.getItem("notifications")) || [];
+      notifs.push({
+        type: type, // accepted | rejected | delayed | pending
+        message: message,
+        time: new Date().toLocaleString()
+      });
+      localStorage.setItem("notifications", JSON.stringify(notifs));
+    }
+  </script>
+</body>
+</html>

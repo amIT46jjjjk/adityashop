@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperMart - Everything Under One Roof</title>
+     <link href="css/tailwind.min.css" rel="stylesheet" />
+     <!-- Swiper Local CSS -->
+       <link rel="stylesheet" href="css/swiper-bundle.min.css" />
+
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            overflow-x: hidden;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #e80606 100%);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, #667eea, #764ba2);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+        
+        .card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.1);
+        }
+        
+        .category-btn {
+            transition: all 0.3s ease;
+            border-radius: 30px;
+        }
+        
+        .category-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: white;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .discount-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            animation: pulse 1.5s infinite;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+        .text-xxs {
+            font-size: 0.65rem;
+            line-height: 0.75rem;
+        }
+        
+        .cart-animation {
+            transition: all 0.3s ease;
+        }
+        
+        .cart-animation:hover {
+            transform: rotate(-15deg) scale(1.1);
+        }
+
+        /* Welcome Page */
+        .welcome-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f7fa;
+            position: relative;
+        }
+
+        .welcome-message {
+            text-align: center;
+            animation: fadeIn 1s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Category Card Styles */
+        .category-card {
+            background-color: black;
+            color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .category-card:hover {
+            transform: scale(1.05);
+        }
+
+        .category-card img {
+            width: 100%;
+            height: 150px; /* Reduced height */
+            object-fit: cover;
+        }
+
+        .category-title {
+            text-align: center;
+            padding: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* Cash on Delivery Section */
+        .cash-on-delivery {
+            background-color: #f0f4c3;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Navigation Menu */
+        .nav-menu {
+            display: flex;
+            justify-content: space-around;
+            background-color: #667eea;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .nav-menu a {
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .nav-menu a svg {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Notification -->
+    <div id="notification" class="hidden bg-green-600 text-white text-center py-2 fixed top-0 left-0 right-0 z-50">
+        ✅ Item added to cart successfully!
+    </div>
+
+    <nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+      <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/76865a68-f7ef-477b-8c9d-c0954338721a.png" alt="SuperMart Logo" class="rounded-full w-10 h-10" />
+          <div class="leading-tight">
+            <a href="index.html"><div class="text-xl font-bold">SuperMart</div></a>
+            <div class="text-xs text-gray-200 ml-1 tracking-wide">Offers and Deals</div>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <a href="notification.html" aria-label="Notifications">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white hover:text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V5a1 1 0 10-2 0v.083A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          </a>
+          <a href="cart.html" class="relative flex items-center">
+            <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" class="w-6 h-6" />
+            <span id="cart-count-top" class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5"></span>
+          </a>
+        </div>
+      </div>
+    </nav>
+    
+
+    <!-- Welcome Banner -->
+    <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 animate__animated animate__fadeIn">
+        <div class="container mx-auto text-center">
+            <b><h1 class="text-3xl font-bold text-yellow-800">Welcome  to  Deepu  Variety  Store!</h1></b>
+            <b><h6 class="text-yellow-700">Your one-stop shop for all daily needs with amazing offers</h6></b>
+        </div>
+    </div>
+
+
+<!-- Search Bar: Input → Search Icon → Mic Icon -->
+<div class="px-4 py-2">
+  <div class="flex items-center w-full border border-gray-300 rounded overflow-hidden">
+    
+    <!-- Search Input -->
+    <input 
+      type="text" 
+      id="searchInput" 
+      placeholder="Search for products..." 
+      class="flex-grow p-2 outline-none min-w-0 text-sm"
+    />
+
+    <!-- Search Icon Button -->
+    <button class="text-gray-500 p-2 flex-shrink-0">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
+      </svg>
+    </button>
+
+    <!-- Mic Button -->
+    <button 
+      onclick="startVoiceSearch()" 
+      class="bg-purple-600 text-white p-2 flex-shrink-0"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10 2a2 2 0 00-2 2v6a2 2 0 004 0V4a2 2 0 00-2-2z" />
+        <path d="M5 10a5 5 0 0010 0h-1a4 4 0 01-8 0H5z" />
+      </svg>
+    </button>
+
+  </div>
+</div>
+  <!-- Search Results Container -->
+<div id="searchResults" class="px-4 mt-4 hidden">
+  <h3 class="text-xl font-bold mb-2 text-purple-700">🔍 Search Results:</h3>
+  <div id="searchResultsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    <!-- JS will fill this -->
+  </div>
+</div>
+
+    <!-- Deals Nav Section -->
+  <div class="bg-black py-3 mt-2">
+    <div class="flex justify-start space-x-6 pl-4 text-sm font-medium text-white">
+      <a href="todaydeals.html" class="hover:underline">Today's Deals</a>
+      <a href="specialoffer.html" class="hover:underline">Offers</a>
+      <a href="discount.html" class="hover:underline">Discounts</a>
+    </div>
+  </div>
+
+
+<script>
+function showOrderStatus(status) {
+  const message = (status === 'accept')
+    ? '🎉 Congratulations! Your order has been accepted.'
+    : '❌ Sorry! Your order was rejected.';
+
+  // 🔔 Show browser notification
+  if ("Notification" in window) {
+    Notification.requestPermission().then(permission => {
+      if (permission === "granted") {
+        new Notification("Multi Mart Store", {
+          body: message,
+          icon: status === 'accept'
+            ? 'https://cdn-icons-png.flaticon.com/512/845/845646.png'
+            : 'https://cdn-icons-png.flaticon.com/512/463/463612.png'
+        });
+      }
+    });
+  }
+
+  // ✅ Optional: Show on page too (like banner or alert)
+  alert(message);
+}
+
+const status = new URLSearchParams(window.location.search).get("status");
+if (status === "accept" || status === "reject") {
+  showOrderStatus(status);
+}
+
+"https://yourdomain.com/cart.html?status=accept"
+
+</script>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-16 relative overflow-hidden">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-10 md:mb-0 animate__animated animate__fadeInLeft">
+                <b><h1 class="text-4xl md:text-5xl font-bold mb-4">Everything You Need From A To Z </h1></b>
+                <p class="text-xl mb-8">One stop shop for all your daily needs with best quality and prices.</p>
+                <div class="flex space-x-4">
+                    <button class="btn-primary px-6 py-3 rounded-full font-bold">Shop Now</button>
+                    <button class="bg-white text-purple-700 px-6 py-3 rounded-full font-bold flex items-center space-x-2">
+                        <span>Watch Demo</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+<!-- Full Width Slider -->
+<div class="w-full overflow-hidden mt-4 rounded-lg shadow-lg">
+  <div id="slider" class="flex transition-transform duration-700 ease-in-out">
+    
+    <!-- Slide 1 -->
+    <div class="flex-shrink-0 w-full flex flex-col items-center">
+      <img src="https://thumbs.dreamstime.com/b/mother-daughter-grocery-store-178991395.jpg" 
+           class="w-full h-52 object-cover" />
+      <div class="text-white bg-black bg-opacity-70 text-sm font-bold w-full text-center py-2">
+        -20% OFF
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="flex-shrink-0 w-full flex flex-col items-center">
+      <img src="https://thumbs.dreamstime.com/b/family-shopping-various-fresh-vegetables-supermarket-cheerful-spanish-family-shopping-various-fresh-vegetables-supermarket-226691565.jpg" 
+           class="w-full h-52 object-cover" />
+      <div class="text-white bg-black bg-opacity-70 text-sm font-bold w-full text-center py-2">
+        -30% OFF
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="flex-shrink-0 w-full flex flex-col items-center">
+      <img src="https://gs.apnamart.in/store/store_258/list/DSC_0320.JPG" 
+           class="w-full h-52 object-cover" />
+      <div class="text-white bg-black bg-opacity-70 text-sm font-bold w-full text-center py-2">
+        -15% OFF
+      </div>
+    </div>
+
+  </div>
+</div>
+    </section>
+
+
+    <!-- Categories Section -->
+    <section id="categories" class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12 animate__animated animate__fadeIn">
+                <h2 class="text-3xl font-bold mb-3">Shop by Categories</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Browse through our diverse range of products organized by categories for easy shopping</p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+    <div class="grid grid-cols-3 gap-4">
+      <div class="text-center">
+        <a href = "GROCERY.HTML"><img src="https://tse3.mm.bing.net/th/id/OIP.JQMNbF7G71zsR7O-2Z14ZQHaFe?pid=ImgDet&w=184&h=135&c=7&dpr=1.3&o=7&rm=3" class="mx-auto mb-2 rounded-full" />
+        <p>Grocery</p></a>
+      </div>
+      <div class="text-center">
+        <img src="https://th.bing.com/th/id/OIP.OHSVh-CBqK6ZXZTOfItNsAHaFi?w=256&h=191&c=7&r=0&o=5&dpr=1.3&pid=1.7" class="mx-auto mb-2 rounded-full" />
+        <p>Beauty</p>
+      </div>
+      <div class="text-center">
+        <img src="https://th.bing.com/th/id/OIP.Sh4BZZvFAuCw5ckZ-9NttgHaF4?w=284&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3" class="mx-auto mb-2 rounded-full" />
+        <p>Vegetable</p>
+      </div>
+      <!-- Additional categories can be added here -->
+    </div>
+  
+    </section>
+
+<!-- Hurry Up Sale Section (with slider) -->
+<section class="py-12 bg-red-100">
+  <div class="container mx-auto px-4 text-center">
+    <h2 class="text-3xl font-bold mb-4">🔥 Hurry Up Sale Now!</h2>
+
+    <!-- Slider Container -->
+    <div class="relative overflow-hidden rounded-lg shadow-lg mb-4">
+      <div id="sale-slider" class="flex w-full transition-transform duration-700 ease-in-out">
+        <img src="https://tse3.mm.bing.net/th/id/OIP.18bOePG8lxaNvpV7476xZwHaE6?rs=1&pid=ImgDetMain&o=7&rm=3" class="w-full h-64 object-cover flex-shrink-0" />
+        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3c054a24-579f-4404-b41f-315d71eeade0.png" class="w-full h-64 object-cover flex-shrink-0" />
+        <img src="https://ferristheplacetobe.com/wp-content/uploads/2023/04/6_11a-520x397.jpg" class="w-full h-64 object-cover flex-shrink-0" />
+      </div>
+    </div>
+
+    <a href="hurryupsale.html"><button class="bg-white text-red-600 font-bold px-6 py-3 rounded-full shadow hover:bg-red-200 transition">
+      🛍️ Shop Now
+    </button></a>
+  </div>
+</section>
+<!-- Featured Products -->
+<section id="products" class="py-12 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-12 animate__animated animate__fadeIn">
+      <h2 class="text-3xl font-bold mb-3">Featured Products</h2>
+      <p class="text-gray-600 max-w-2xl mx-auto">Carefully selected products that our customers love</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+      <!-- Product 1: Tide -->
+      <div class="border rounded p-4 shadow relative bg-white">
+        <!-- BEST SALE badge -->
+        <div class="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded animate-pulse">BEST SALE</div>
+
+        <!-- Product Image -->
+        <img src="https://m.media-amazon.com/images/I/61Eflfx5rlL._AC_UF1000,1000_QL80_FMwebp_.jpg"
+             class="w-full h-auto object-contain mb-2 rounded"
+             alt="Tide 5kg">
+
+        <!-- Product Info -->
+        <h3 class="text-md font-semibold text-gray-800">Tide 5kg</h3>
+        <p class="text-sm text-red-600 font-bold mb-1">Discount / Bestseller</p>
+        <p class="text-sm">
+          <span class="line-through text-gray-500">₹700</span>
+          <span class="text-green-600 font-bold text-lg">₹600</span>
+        </p>
+
+        <!-- Notification Box -->
+        <div id="notify-Tide" class="text-xs bg-green-500 text-white px-2 py-1 mt-2 rounded shadow hidden w-fit">✅ Added to Cart</div>
+
+        <!-- Action Buttons -->
+        <div class="flex space-x-2 mt-3">
+          <button onclick="addToCart('Tide 5kg', 600, 'https://m.media-amazon.com/images/I/61Eflfx5rlL._AC_UF1000,1000_QL80_FMwebp_.jpg', 'notify-Tide')"
+                  class="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded-full text-sm font-semibold">
+            ➕ Add to Cart
+          </button>
+          <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
+            ⚡ Buy Now
+          </button>
+        </div>
+      </div>
+
+      <!-- Product 2: Dove -->
+      <div class="border rounded p-4 shadow relative bg-white">
+        <!-- BEST SALE badge -->
+        <div class="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded animate-pulse">BEST SALE</div>
+
+        <!-- Product Image -->
+        <img src="https://cdn.grofers.com/app/assets/products/sliding_images/jpeg/6a8bd8f9-eafd-4d3e-a330-d76e37f04954.jpg?ts=1712292161"
+             class="w-full h-auto object-contain mb-2 rounded"
+             alt="Dove Soap 8 Pack">
+
+        <!-- Product Info -->
+        <h3 class="text-md font-semibold text-gray-800">Dove Soap 8 Pack</h3>
+        <p class="text-sm text-red-600 font-bold mb-1">Discount = 23% / Bestseller</p>
+        <p class="text-sm">
+          <span class="line-through text-gray-500">₹770</span>
+          <span class="text-green-600 font-bold text-lg">₹700</span>
+        </p>
+
+        <!-- Notification Box -->
+        <div id="notify-Dove" class="text-xs bg-green-500 text-white px-2 py-1 mt-2 rounded shadow hidden w-fit">✅ Added to Cart</div>
+
+        <!-- Action Buttons -->
+        <div class="flex space-x-2 mt-3">
+          <button onclick="addToCart('Dove Soap 8 Pack', 700, 'https://cdn.grofers.com/app/assets/products/sliding_images/jpeg/6a8bd8f9-eafd-4d3e-a330-d76e37f04954.jpg?ts=1712292161', 'notify-Dove')"
+                  class="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded-full text-sm font-semibold">
+            ➕ Add to Cart
+          </button>
+          <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
+            ⚡ Buy Now
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Cash on Delivery Section -->
+<section class="cash-on-delivery bg-gray-100 py-12">
+    <div>
+        <h2 class="font-bold mb-4">Cash on Delivery Available!</h2>
+        <img src="https://tse3.mm.bing.net/th/id/OIP.ZWHNzVk7ys_hDVFxxpIrtgHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Cash on Delivery" class="w-full h-64 object-cover rounded-lg mb-4">
+        <a href ="cashondelivery.html"><button class="btn-primary px-6 py-3 rounded-full font-bold">Shop Now Hurry Up</button></a>
+    </div>
+</section>
+
+<!-- Flash Sale Section (Improved with Countdown + Image) -->
+<section id="offers" class="py-16 bg-gradient-to-r from-purple-100 to-purple-200 relative overflow-hidden">
+  <div class="container mx-auto px-4">
+    <div class="flex flex-col-reverse lg:flex-row items-center justify-between bg-white shadow-2xl rounded-2xl p-8 lg:p-12 relative z-10 animate__animated animate__pulse">
+
+      <!-- Text & Timer -->
+      <div class="w-full lg:w-1/2 text-center lg:text-left">
+        <h2 class="text-4xl font-extrabold text-purple-800 mb-4">⚡ Flash Sale Ends In</h2>
+        
+        <!-- Countdown Timer -->
+        <div id="countdown" class="flex justify-center lg:justify-start space-x-4 mb-6 text-white font-bold text-center">
+          <div class="bg-purple-600 rounded-lg px-4 py-2">
+            <div id="hours" class="text-3xl">00</div>
+            <div class="text-xs">HOURS</div>
+          </div>
+          <div class="bg-purple-600 rounded-lg px-4 py-2">
+            <div id="minutes" class="text-3xl">00</div>
+            <div class="text-xs">MINUTES</div>
+          </div>
+          <div class="bg-purple-600 rounded-lg px-4 py-2">
+            <div id="seconds" class="text-3xl">00</div>
+            <div class="text-xs">SECONDS</div>
+          </div>
+        </div>
+
+        <!-- Offer Text -->
+        <p class="mb-4 text-gray-700 text-sm lg:text-base">Get up to <span class="text-purple-700 font-bold text-lg">70% OFF</span> on selected items for a limited time only!</p>
+
+        <!-- Coupon Box -->
+        <div class="bg-purple-50 border border-dashed border-purple-400 p-4 rounded-lg mb-6 inline-block">
+          <p class="text-sm mb-1 text-purple-700 font-semibold">Use Coupon Code:</p>
+          <div class="bg-white px-4 py-2 rounded-lg border border-purple-500 font-bold text-purple-700 tracking-wide">
+            ADITYA CHUTIYA B2
+          </div>
+        </div>
+        <br>
+
+        <!-- Button -->
+        <a href="coupon.html"><button class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-full font-semibold transition">
+          🛍️ Shop Now
+        </button></a>
+      </div>
+
+      <!-- Image -->
+      <div class="w-full lg:w-1/2 mb-6 lg:mb-0">
+        <img src="https://th.bing.com/th/id/OIP.f7qFm8ShjWMgrGNktgDSHQHaE7?w=278&h=185&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3" 
+             alt="Flash Sale"
+             class="w-full max-w-md mx-auto lg:mx-0 rounded-xl drop-shadow-xl" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Background Circles -->
+  <div class="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-purple-300 opacity-30"></div>
+  <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-purple-400 opacity-20"></div>
+</section>
+
+<!-- Countdown Timer Script -->
+<script>
+  function startCountdown(duration) {
+    let endTime = Date.now() + duration * 1000;
+
+    function update() {
+      const now = Date.now();
+      const diff = Math.max(0, Math.floor((endTime - now) / 1000));
+
+      const hours = String(Math.floor(diff / 3600)).padStart(2, '0');
+      const minutes = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+      const seconds = String(diff % 60).padStart(2, '0');
+
+      document.getElementById("hours").textContent = hours;
+      document.getElementById("minutes").textContent = minutes;
+      document.getElementById("seconds").textContent = seconds;
+
+      if (diff > 0) {
+        requestAnimationFrame(update);
+      }
+    }
+
+    update();
+  }
+
+  // Start countdown for 12 hours
+  startCountdown(12 * 60 * 60);
+</script>
+
+    <!-- Testimonials -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-3">What Our Customers Say</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Hear from some of our satisfied customers about their shopping experience</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="bg-gray-50 p-6 rounded-xl shadow-sm relative animate__animated animate__fadeInUp">
+                    <div class="absolute -top-5 -left-5 w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold">5★</div>
+                    <div class="flex items-center mb-4">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b2e98f3c-2726-4d71-86dc-b77486b3826c.png" alt="Customer photo" class="w-10 h-10 rounded-full mr-3">
+                        <div>
+                            <h4 class="font-bold">Rahul Sharma</h4>
+                            <p class="text-gray-500 text-sm">Verified Customer</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700">"SuperMart has changed my shopping experience completely! The delivery is always on time and the quality of products is excellent. Highly recommended!"</p>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="bg-gray-50 p-6 rounded-xl shadow-sm relative animate__animated animate__fadeInUp animate__delay-1s">
+                    <div class="absolute -top-5 -left-5 w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold">5★</div>
+                    <div class="flex items-center mb-4">
+                        <img src="https://storage.googleapis.com/workspace-0f707 11f-8b4e-4d94-86f1-2a93ccde5887/image/1f8f88b0-8ddf-4a85-896a-b339682278e0.png" alt="Middle-aged businessman portrait" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-bold">Priya Patel</h4>
+                            <p class="text-gray-500 text-sm">Verified Customer</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700">"I've been shopping with SuperMart for over a year now and never had a bad experience. Their customer service is exceptional and prices are very competitive."</p>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="bg-gray-50 p-6 rounded-xl shadow-sm relative animate__animated animate__fadeInUp animate__delay-2s">
+                    <div class="absolute -top-5 -left-5 w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold">4★</div>
+                    <div class="flex items-center mb-4">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/1ac0fdab-c26f-4550-8af4-0e7e50901198.png" alt="Young smiling woman portrait" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-bold">Vijay Kumar</h4>
+                            <p class="text-gray-500 text-sm">Verified Customer</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700">"The selection of products at SuperMart is unbeatable. From groceries to electronics, they have everything I need. The mobile app makes shopping so convenient."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="py-12 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-sm p-8 text-center">
+                <h2 class="text-3xl font-bold mb-3">Subscribe to Our Newsletter</h2>
+                <p class="text-gray-600 mb-6">Stay updated with our latest products and exclusive offers</p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                    <input type="email" placeholder="Your email address" class="px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 flex-grow">
+                    <button class="btn-primary px-6 py-3 rounded-lg font-bold">Subscribe</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="gradient-bg text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <!-- About -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">SuperMart</h3>
+                    <p class="mb-4">Your one-stop shop for all daily needs with best quality and prices from A to Z.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="bg-white text-purple-600 rounded-full w-10 h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="#" class="bg-white text-purple-600 rounded-full w-10 h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="#" class="bg-white text-purple-600 rounded-full w-10 h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="#" class="bg-white text-purple-600 rounded-full w-10 h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:underline">Home</a></li>
+                        <li><a href="#" class="hover:underline">About Us</a></li>
+                        <li><a href="#" class="hover:underline">Products</a></li>
+                        <li><a href="#" class="hover:underline">Offers</a></li>
+                        <li><a href="#" class="hover:underline">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Categories -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Categories</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:underline">Grocery</a></li>
+                        <li><a href="#" class="hover:underline">Electronics</a></li>
+                        <li><a href="#" class="hover:underline">Fashion</a></li>
+                        <li><a href="#" class="hover:underline">Home & Kitchen</a></li>
+                        <li><a href="#" class="hover:underline">Beauty</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Contact Us</h3>
+                    <address class="not-italic">
+                        <p class="mb-2">MULTI MART STORE , 335512</p>
+                        <p class="mb-2">Email: deepuvarietystore873@gmail.com</p>
+                        <p>Phone: +91 89556 22801</p>
+                        <p>Phone: +91 88529 09296</p>
+                    </address>
+                </div>
+            </div>
+            
+            <div class="border-t border-white border-opacity-20 pt-8 text-center">
+                <p>© 2023 SuperMart. All Rights Reserved.</p>
+            </div>
+        </div>
+
+
+
+    
+
+
+<!-- BOTTOM NAVIGATION FIXED MENU -->
+<div class="fixed bottom-0 left-0 right-0 bg-white shadow-md border-t flex justify-around items-center py-2 z-50">
+  
+  <!-- Home -->
+  <a href="home.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M4 10v10h5v-6h6v6h5V10" />
+    </svg>
+    Home
+  </a>
+
+  <!-- Cart -->
+  <a href="cart.html" class="relative flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l1.5 6H15l1.5-6M6 19a1 1 0 11-2 0 1 1 0 012 0zm12 0a1 1 0 11-2 0 1 1 0 012 0z" />
+    </svg>
+    Cart
+    <span id="cart-count-bottom" class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-1.5">0</span>
+  </a>
+
+  <!-- Orders -->
+  <a href="orders.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m-6-8h6m2-4h2a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+    </svg>
+    Orders
+  </a>
+
+  <!-- Menu -->
+  <a href="menu.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+    Menu
+  </a>
+
+</div>
+    <!-- Floating Action Button (Chat) -->
+    <div class="fixed bottom-6 right-6 animate-bounce">
+        <button class="bg-purple-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-xl">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        // Simple animation for buttons when clicked
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.add('animate__animated', 'animate__pulse');
+                setTimeout(() => {
+                    this.classList.remove('animate__animated', 'animate__pulse');
+                }, 500);
+            });
+        });
+        
+        // Carousel functionality
+        let currentIndex = 0;
+        const images = document.querySelectorAll('.carousel img');
+        setInterval(() => {
+            images[currentIndex].classList.add('hidden');
+            currentIndex = (currentIndex + 1) % images.length;
+            images[currentIndex].classList.remove('hidden');
+        }, 3000); // Change image every 3 seconds
+
+        // Countdown timer for flash sale
+        function updateCountdown() {
+            const flashSaleEnd = new Date();
+            flashSaleEnd.setHours(flashSaleEnd.getHours() + 12);
+            
+            setInterval(() => {
+                const now = new Date();
+                const diff = flashSaleEnd - now;
+                
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                document.querySelector('.text-2xl:nth-child(1)').textContent = hours.toString().padStart(2, '0');
+                document.querySelector('.text-2xl:nth-child(3)').textContent = minutes.toString().padStart(2, '0');
+                document.querySelector('.text-2xl:nth-child(5)').textContent = seconds.toString().padStart(2, '0');
+            }, 1000);
+        }
+        
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('welcomePage').style.display = 'none';
+                document.getElementById('mainNav').classList.remove('hidden');
+            }, 3000); // Show welcome message for 3 seconds
+            updateCountdown();
+        });
+ 
+function updateCartCount() {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const badge = document.getElementById("cart-count");
+  if (badge) badge.textContent = total;
+}
+window.onload = function () {
+  updateCartCount();
+};
+addToCart(name, price, image); // your existing function
+updateCartCount();             // this line is important!
+
+function updateCartCount() {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  const topBadge = document.getElementById("cart-count");
+  const bottomBadge = document.getElementById("cart-count-bottom");
+
+  if (topBadge) topBadge.textContent = count;
+  if (bottomBadge) bottomBadge.textContent = count;
+}
+document.getElementById("cart-count-bottom").textContent = cartCount;
+   </script>
+
+       <!-- Swiper Local JS -->
+
+
+<script src="js/swiper-bundle.min.js"></script>
+<script>
+  let currentSlide = 0;
+  const slides = document.querySelectorAll("#slider > div");
+  const mainSlider = document.getElementById("slider");
+
+  function showSlide(index) {
+    const offset = index * -100;
+    mainSlider.style.transform = `translateX(${offset}%)`;
+  }
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % slides.length;
+    showSlide(currentSlide);
+  }
+
+  setInterval(nextSlide, 3000); // Auto slide every 3s
+
+  
+</script>
+
+<script>
+  let slideIndex = 0;
+  const saleSlider = document.getElementById('sale-slider');
+  const totalSlides = saleSlider.children.length;
+
+  function slide() {
+    slideIndex = (slideIndex + 1) % totalSlides;
+    saleSlider.style.transform = `translateX(-${slideIndex * 100}%)`;
+  }
+
+  setInterval(slide, 3000); // Every 3 seconds
+</script>
+<script>
+  function addToCart(name, price, image, notifyId) {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const index = cart.findIndex(item => item.name === name);
+
+    if (index !== -1) {
+      if (cart[index].quantity >= 5) {
+        showFloatingNotification(notifyId, "⚠️ Max 5 items!");
+        return;
+      }
+      cart[index].quantity += 1;
+    } else {
+      cart.push({ name, price, image, quantity: 1 });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    showFloatingNotification(notifyId, "✅ Added to Cart!");
+    updateCartCount();
+  }
+
+  function showFloatingNotification(id, message) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = message;
+    el.classList.remove("hidden");
+
+    setTimeout(() => {
+      el.classList.add("hidden");
+    }, 2000);
+  }
+
+  function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const badge = document.getElementById("cart-count");
+    if (badge) badge.textContent = total;
+  }
+
+  window.onload = updateCartCount;
+</script>
+<script>
+  // ✅ Count items in cart and update the cart badge
+  function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.getElementById("cart-count").textContent = totalItems;
+  }
+
+  // ✅ Add to Cart logic (reusable)
+  function addToCart(name, price, image) {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const existingIndex = cart.findIndex(item => item.name === name);
+
+    if (existingIndex !== -1) {
+      cart[existingIndex].quantity += 1;
+    } else {
+      cart.push({ name, price, image, quantity: 1 });
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount(); // ✅ Update cart number on icon
+    showNotification(`${name} added to cart!`);
+  }
+
+  // ✅ Show notification (you can style this too)
+  function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.className = 'fixed top-16 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg z-50 animate-bounce';
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+      notification.remove();
+    }, 2000);
+  }
+
+  // ✅ On Page Load
+  window.onload = function () {
+    updateCartCount(); // sync cart count on page load
+  };
+</script>
+<script>
+  function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+    const top = document.getElementById("cart-count-top");
+    const bottom = document.getElementById("cart-count-bottom");
+
+    if (top) top.textContent = count;
+    if (bottom) bottom.textContent = count;
+  }
+
+  function addToCart(name, price, image = "") {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const index = cart.findIndex(item => item.name === name);
+
+    if (index !== -1) {
+      cart[index].quantity += 1;
+    } else {
+      cart.push({ name, price, image, quantity: 1 });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartCount();
+    showNotification(name + " added to cart!");
+  }
+
+  function showNotification(msg) {
+    const notify = document.createElement("div");
+    notify.className = "fixed top-20 right-4 bg-green-500 text-white px-4 py-2 rounded shadow z-50";
+    notify.innerText = msg;
+    document.body.appendChild(notify);
+    setTimeout(() => notify.remove(), 2000);
+  }
+
+  window.onload = () => {
+    updateCartCount();
+  };
+</script>
+<script>
+function showNotification(id) {
+  const notify = document.getElementById(id);
+  if (notify) {
+    notify.classList.remove("hidden");
+    setTimeout(() => {
+      notify.classList.add("hidden");
+    }, 2000);
+  }
+}
+
+function addToCart(name, price, image, notifyId = null) {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const index = cart.findIndex(item => item.name === name);
+
+  if (index !== -1) {
+    cart[index].quantity += 1;
+  } else {
+    cart.push({ name, price, image, quantity: 1 });
+  }
+
+  localStorage.setItem('cart', JSON.stringify(cart));
+  updateCartCount();
+  if (notifyId) showNotification(notifyId);
+}
+
+function updateCartCount() {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const countSpans = document.querySelectorAll("#cart-count, #cart-count-bottom");
+  countSpans.forEach(span => span.textContent = totalQty);
+}
+</script>
+
+<script>
+function searchProducts(query) {
+  const allProducts = JSON.parse(localStorage.getItem("allProducts")) || [];
+
+  const results = allProducts.filter(item =>
+    item.name.toLowerCase().includes(query.toLowerCase())
+  );
+
+  const resultBox = document.getElementById("searchResults");
+  const container = document.getElementById("searchResultsContainer");
+
+  container.innerHTML = "";
+
+  if (results.length === 0) {
+    resultBox.classList.remove("hidden");
+    container.innerHTML = `<p class="text-red-500 col-span-2">No products found.</p>`;
+    return;
+  }
+
+  resultBox.classList.remove("hidden");
+
+  results.forEach(item => {
+    const notifyId = `notify-${item.name.replace(/\s+/g, "")}`;
+    container.innerHTML += `
+      <div class="border rounded p-4 shadow relative bg-white">
+        <img src="${item.image}" class="w-full h-40 object-cover mb-2 rounded" alt="${item.name}">
+        <h3 class="text-md font-semibold text-gray-800">${item.name}</h3>
+        <p class="text-sm text-green-600 font-bold mb-1">₹${item.price}</p>
+        <div id="${notifyId}" class="text-xs bg-green-500 text-white px-2 py-1 mt-1 rounded shadow hidden w-fit">✅ Added to Cart</div>
+        <div class="flex space-x-2 mt-3">
+          <button onclick="addToCart('${item.name}', ${item.price}, '${item.image}', '${notifyId}')"
+            class="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium">➕ Add</button>
+          <button class="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium">⚡ Buy</button>
+        </div>
+      </div>
+    `;
+  });
+}
+</script>
+
+
+<script>
+document.getElementById("searchInput").addEventListener("input", function () {
+  const q = this.value.trim();
+  if (q.length >= 2) {
+    searchProducts(q);
+  } else {
+    document.getElementById("searchResults").classList.add("hidden");
+  }
+});
+</script>
+
+<script>
+const allProducts = [
+  { name: "Tide 5kg", price: 600, image: "https://m.media-amazon.com/images/I/61Eflfx5rlL._AC_UF1000,1000_QL80_FMwebp_.jpg" },
+  { name: "Sample Product 2", price: 350, image: "https://m.media-amazon.com/images/I/61Eflfx5rlL._AC_UF1000,1000_QL80_FMwebp_.jpg" },
+  { name: "Wireless Headphones", price: 7499, image: "https://via.placeholder.com/300x150?text=Headphones" }
+];
+localStorage.setItem("allProducts", JSON.stringify(allProducts));
+</script>
+
+<script>
+window.onload = () => {
+  updateCartCount();
+};
+</script>
+
+</body>
+</html>

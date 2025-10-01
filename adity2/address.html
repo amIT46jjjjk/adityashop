@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi Mart Store | Cart</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #0f1010;
+      overflow-x: hidden;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #e80606 100%);
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #ffffff;
+      border-top: 1px solid #ccc;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 50;
+    }
+    .bottom-nav a {
+      font-size: 12px;
+      color: #4B5563;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bottom-nav a:hover {
+      color: #7C3AED;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/76865a68-f7ef-477b-8c9d-c0954338721a.png" alt="SuperMart Logo" class="rounded-full w-10 h-10" />
+      <div class="leading-tight">
+        <div class="text-xl font-bold">SuperMart</div>
+        <div class="text-xs text-gray-200 ml-1 tracking-wide">Offers and Deals</div>
+      </div>
+    </div>
+    <div class="flex items-center space-x-4">
+      <a href="#notifications" aria-label="Notifications">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white hover:text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V5a1 1 0 10-2 0v.083A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+      </a>
+      <a href="cart.html" class="relative flex items-center">
+        <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" class="w-6 h-6" />
+        <span id="cart-count-top" class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Urgent Delivery Banner -->
+<div class="bg-black p-4 mt-2 rounded">
+  <h2 class="text-white text-center text-lg font-bold tracking-wide">
+    30 Minutes Delivery – Hurry Up!
+  </h2>
+</div>
+
+<!-- Delivery Address Form -->
+<div class="max-w-xl mx-auto mt-6 bg-white border border-gray-300 rounded shadow p-6">
+  <h2 class="text-2xl font-bold text-center mb-6">Delivery Address</h2>
+  <form id="addressForm" class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium">Full Name</label>
+      <input type="text" id="name" required class="w-full mt-1 p-2 border rounded">
+    </div>
+    <div>
+      <label class="block text-sm font-medium">Mobile Number</label>
+      <input type="tel" id="mobile" maxlength="10" pattern="[0-9]{10}" required class="w-full mt-1 p-2 border rounded">
+    </div>
+    <div>
+      <label class="block text-sm font-medium">Flat No. / Building</label>
+      <input type="text" id="flat" required class="w-full mt-1 p-2 border rounded">
+    </div>
+    <div>
+      <label class="block text-sm font-medium">Area</label>
+      <input type="text" id="area" required class="w-full mt-1 p-2 border rounded">
+    </div>
+    <div>
+      <label class="block text-sm font-medium">Pincode</label>
+      <input type="text" id="pincode" maxlength="6" pattern="[0-9]{6}" required class="w-full mt-1 p-2 border rounded">
+      <p id="pincodeError" class="error hidden">We currently deliver only to 335512 and 335513.</p>
+    </div>
+    <button type="submit" class="w-full bg-purple-600 text-white font-bold py-2 rounded">Save Address and Continue</button>
+  </form>
+</div>
+<br><br><br><br>
+
+<!-- BOTTOM NAVIGATION FIXED MENU -->
+<div class="fixed bottom-0 left-0 right-0 bg-white shadow-md border-t flex justify-around items-center py-2 z-50">
+  <a href="index.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M4 10v10h5v-6h6v6h5V10" />
+    </svg>
+    Home
+  </a>
+  <a href="cart.html" class="relative flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l1.5 6H15l1.5-6M6 19a1 1 0 11-2 0 1 1 0 012 0zm12 0a1 1 0 11-2 0 1 1 0 012 0z" />
+    </svg>
+    Cart
+    <span id="cart-count-bottom" class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-1.5">0</span>
+  </a>
+  <a href="orders.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m-6-8h6m2-4h2a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+    </svg>
+    Orders
+  </a>
+  <a href="menu.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+    Menu
+  </a>
+</div>
+
+
+
+<script>
+  document.getElementById("addressForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const mobile = document.getElementById("mobile").value;
+    const flat = document.getElementById("flat").value;
+    const area = document.getElementById("area").value;
+    const pincode = document.getElementById("pincode").value;
+
+    if (pincode !== "335512" && pincode !== "335513") {
+      document.getElementById("pincodeError").classList.remove("hidden");
+      return;
+    } else {
+      document.getElementById("pincodeError").classList.add("hidden");
+    }
+
+    const address = {
+      name,
+      mobile,
+      flat,
+      area,
+      pincode
+    };
+
+    localStorage.setItem("deliveryAddress", JSON.stringify(address));
+    alert("Address saved successfully!");
+    window.location.href = "payment.html"; // redirect to cart or checkout
+  });
+
+  // JavaScript for Cart Functionality
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  document.getElementById("cart-count-top").innerText = cart.length; // Update cart count
+
+  function updateCart() {
+    const cartItemsContainer = document.getElementById('cartItems');
+    cartItemsContainer.innerHTML = ''; // Clear previous items
+    let totalAmount = 0;
+
+    cart.forEach((item, index) => {
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'border rounded p-4 flex justify-between items-center';
+      itemDiv.innerHTML = `
+        <span>${item.name} - ${item.price} ₹</span>
+        <div class="flex items-center space-x-2">
+          <button onclick="removeFromCart(${index})" class="bg-red-600 text-white px-2 py-1 rounded">Remove</button>
+        </div>
+      `;
+      cartItemsContainer.appendChild(itemDiv);
+      totalAmount += item.price; // Assuming each item has a price property
+    });
+
+    document.getElementById('totalAmount').innerText = totalAmount;
+  }
+
+  function removeFromCart(index) {
+    cart.splice(index, 1); // Remove item from cart
+    localStorage.setItem("cart", JSON.stringify(cart)); // Update local storage
+    updateCart(); // Refresh cart display
+  }
+
+  function placeOrder() {
+    alert('Order placed successfully!'); // Placeholder for order placement logic
+    localStorage.removeItem('cart'); // Clear cart after order
+    updateCart(); // Refresh cart display
+  }
+
+  // Initialize cart on page load
+  window.onload = function() {
+    updateCart();
+  };
+</script>
+
+</body>
+</html>

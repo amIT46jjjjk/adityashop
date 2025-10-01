@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vegetables - Multi Mart Store</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f7fa;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #e80606 100%);
+    }
+    .notification {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #4caf50; /* Green */
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      z-index: 1000;
+    }
+    .category-slider {
+      display: flex;
+      overflow-x: auto;
+      padding: 1rem 0;
+    }
+    .category-item {
+      flex: 0 0 auto;
+      width: 80px;
+      margin-right: 1rem;
+      text-align: center;
+      cursor: pointer;
+    }
+    .category-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      overflow: hidden;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      transition: transform 0.2s;
+    }
+    .category-circle:hover {
+      transform: scale(1.1);
+    }
+    .slider {
+      position: relative;
+      overflow: hidden;
+      margin: 2rem 0;
+    }
+    .slider-images {
+      display: flex;
+      transition: transform 0.5s ease;
+    }
+    .slider-image {
+      min-width: 100%;
+      height: auto;
+    }
+    .product-slider {
+      display: flex;
+      overflow-x: auto;
+      padding: 1rem 0;
+    }
+    .product-card {
+      flex: 0 0 auto;
+      width: 200px;
+      margin-right: 1rem;
+      background: white;
+      border-radius: 0.375rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .product-card:hover {
+      transform: scale(1.03);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Notification -->
+<div id="notification" class="notification">Item added to cart!</div>
+
+<!-- Navigation Bar -->
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/76865a68-f7ef-477b-8c9d-c0954338721a.png" alt="SuperMart Logo" class="rounded-full w-10 h-10" />
+      <div class="leading-tight">
+        <div class="text-xl font-bold">SuperMart</div>
+        <div class="text-xs text-gray-200 ml-1 tracking-wide">Vegetables</div>
+      </div>
+    </div>
+    <div class="relative">
+      <a href="cart.html" class="flex items-center text-gray-200 hover:text-white">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l1.5 6H15l1.5-6M6 19a1 1 0 11-2 0 1 1 0 012 0zm12 0a1 1 0 11-2 0 1 1 0 012 0z" />
+        </svg>
+        <span id="cart-count" class="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Bar: Input → Search Icon -->
+<div class="container mx-auto mt-4 px-4">
+  <div class="flex items-center w-full border border-gray-300 rounded overflow-hidden">
+    <!-- Search Input -->
+    <input 
+      type="text" 
+      id="searchInput" 
+      placeholder="Search for products..." 
+      class="flex-grow p-3 outline-none min-w-0 text-sm" 
+      oninput="searchProducts()"
+    />
+    <!-- Search Icon Button -->
+    <button class="text-gray-500 p-2 flex-shrink-0" onclick="searchProducts()">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- Search Results Container -->
+<div id="searchResults" class="px-4 mt-4 hidden">
+  <h3 class="text-xl font-bold mb-2 text-purple-700">🔍 Search Results:</h3>
+  <div id="searchResultsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    <!-- JS will fill this -->
+  </div>
+</div>
+section>
+<!-- 🔵 SECTION 1: White BG with Golden Circles and Image Bottom-Aligned -->
+<div class="bg-white px-4 pt-6 pb-4">
+  <div class="flex overflow-x-auto space-x-6">
+    
+    <!-- Item 1 -->
+    <div class="flex flex-col items-center">
+      <div class="relative w-24 h-24 rounded-full border-4 border-yellow-400 bg-yellow-100 overflow-visible">
+        <!-- Image now starts from bottom of the circle -->
+        <img src="https://instamart-media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,h_600/NI_CATALOG/IMAGES/CIW/2024/8/17/91034afc-7caa-41f7-97f1-a54ee1e4ea13_19272_1.png"
+             class="w-45 h-45 object-contain absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2" />
+      </div>
+      <span class="text-sm mt-3 font-medium text-center">Household nedds</span>
+    </div>
+
+
+
+    <!-- Item 2 -->
+    <div class="flex flex-col items-center">
+      <div class="relative w-24 h-24 rounded-full border-4 border-yellow-400 bg-yellow-100 overflow-visible">
+        <!-- Image now starts from bottom of the circle -->
+        <img src="https://www.pngplay.com/wp-content/uploads/7/Grocery-Items-PNG-HD-Quality.png"
+             class="w-58 h-58 object-contain absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2" />
+      </div>
+      <span class="text-sm mt-3 font-medium text-center">Grocery</span>
+    </div>
+
+    
+    <!-- Item 3 -->
+    <div class="flex flex-col items-center">
+      <div class="relative w-24 h-24 rounded-full border-4 border-yellow-400 bg-yellow-100 overflow-visible">
+        <!-- Image now starts from bottom of the circle -->
+        <img src="https://proteingodam.com/wp-content/uploads/2024/06/Regular-Mass-Gainer-5Kg-Peanut-Butter-Shaker-T-Shirt.webp"
+             class="w-55 h-55 object-contain absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2" />
+      </div>
+      <span class="text-sm mt-3 font-medium text-center">Nutrition & Health</span>
+    </div>
+
+    
+    <!-- Item 4 -->
+    <div class="flex flex-col items-center">
+      <div class="relative w-24 h-24 rounded-full border-4 border-yellow-400 bg-yellow-100 overflow-visible">
+        <!-- Image now starts from bottom of the circle -->
+        <img src="aa.png"
+             class="w-55 h-55 object-contain absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-7" />
+      </div>
+      <span class="text-sm mt-3 font-medium text-center">Baby Care</span>
+    </div>
+
+
+
+    <!-- Item 5 -->
+    <div class="flex flex-col items-center">
+      <div class="relative w-24 h-24 rounded-full border-4 border-yellow-400 bg-yellow-100 overflow-visible">
+        <!-- Image now starts from bottom of the circle -->
+        <img src="https://www.pngplay.com/wp-content/uploads/6/Drools-Dog-Food-Transparent-PNG.png"
+             class="w-50 h-50 object-contain absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1" />
+      </div>
+      <span class="text-sm mt-3 font-medium text-center">Pet Care</span>
+    </div>
+
+
+
+
+
+    
+    </div>
+    </div>
+
+    <!-- 🟡 SECTION 2: Light Yellow BG with Category Boxes -->
+  <div class="bg-yellow-100 px-4 py-6">
+    <h2 class="text-lg font-semibold mb-4">Top categories to shop from</h2>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <!-- Card 1 -->
+      <div class="bg-yellow-300 rounded-lg p-2 shadow-sm">
+        <div class="border border-white rounded-lg p-3 h-32 flex items-center justify-center bg-white bg-opacity-10">
+          <img src="https://warangalmarket.com/wp-content/uploads/2025/05/hom.png" alt="Product" class="h-28 object-contain" />
+        </div>
+        <div class="bg-white text-center py-2 rounded-b-lg">
+          <p class="text-sm font-semibold">Laundry & Cleaners</p>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="bg-yellow-300 rounded-lg p-2 shadow-sm">
+        <div class="border border-white rounded-lg p-3 h-32 flex items-center justify-center bg-white bg-opacity-10">
+          <img src="https://wallpapers.com/images/hd/variety-protein-supplements-containers-xjufhfgepltsncbv.png" alt="Product" class="h-35 object-contain" />
+        </div>
+        <div class="bg-white text-center py-2 rounded-b-lg">
+          <p class="text-sm font-semibold">Sports Nutrition</p>
+        </div>
+      </div>
+
+
+
+     
+      <!-- Card 3 -->
+      <div class="bg-yellow-300 rounded-lg p-2 shadow-sm">
+       <a href = "khulamaal.html"> <div class="border border-white rounded-lg p-3 h-32 flex items-center justify-center bg-white bg-opacity-10">
+          <img src="https://img.freepik.com/free-photo/vibrant-colors-spices-row-generated-by-ai_188544-34391.jpg?w=360" alt="Product" class="h-40 object-contain" />
+        </div>
+        <div class="bg-white text-center py-2 rounded-b-lg">
+          <p class="text-sm font-semibold"> Gram Msale </p></a>
+        </div>
+      </div>
+
+
+ 
+
+
+
+            <!-- Card 4 -->
+      <div class="bg-yellow-300 rounded-lg p-2 shadow-sm">
+        <div class="border border-white rounded-lg p-3 h-32 flex items-center justify-center bg-white bg-opacity-10">
+          <img src="https://gspice.mx/cdn/shop/collections/Oils_and_Ghee_1200x1200.webp?v=1748584699" alt="Product" class="h-30 object-contain" />
+        </div>
+        <div class="bg-white text-center py-2 rounded-b-lg">
+          <p class="text-sm font-semibold">Oil & Ghee</p>
+        </div>
+      </div>
+
+
+
+            <!-- Card 5 -->
+      <div class="bg-yellow-300 rounded-lg p-2 shadow-sm">
+        <div class="border border-white rounded-lg p-3 h-32 flex items-center justify-center bg-white bg-opacity-10">
+          <img src="https://img.freepik.com/free-photo/set-pecan-pistachios-almond-peanut-cashew-pine-nuts-lined-up-assorted-nuts-dried-fruits-mini-different-bowls_176474-2051.jpg?semt=ais_hybrid&w=740" alt="Product" class="h-35 object-contain" />
+        </div>
+        <div class="bg-white text-center py-2 rounded-b-lg">
+          <p class="text-sm font-semibold">Dry Fruits & nuts </p>
+        </div>
+      </div>
+
+
+
+
+
+
+      <!-- Card 6 -->
+      <div class="bg-yellow-300 rounded-lg p-2 shadow-sm">
+        <div class="border border-white rounded-lg p-3 h-32 flex items-center justify-center bg-white bg-opacity-10">
+          <img src="https://i.pinimg.com/736x/be/56/e5/be56e5582e5186297b1559f258ac6b8f.jpg" alt="Product" class="h-30 object-contain" />
+        </div>
+        <div class="bg-white text-center py-2 rounded-b-lg">
+          <p class="text-sm font-semibold">Beverages</p>
+        </div>
+      </div>
+
+
+      <!-- Card 7 -->
+      <div class="bg-yellow-300 rounded-lg p-2 shadow-sm">
+        <div class="border border-white rounded-lg p-3 h-32 flex items-center justify-center bg-white bg-opacity-10">
+          <img src="https://i.ebayimg.com/images/g/-U0AAOSwWz9fH~hp/s-l1200.jpg" alt="Product" class="h-30 object-contain" />
+        </div>
+        <div class="bg-white text-center py-2 rounded-b-lg">
+          <p class="text-sm font-semibold">Breakfast Specials</p>
+        </div>
+      </div>
+
+
+ 
+           <!-- Card 8 -->
+      <div class="bg-yellow-300 rounded-lg p-2 shadow-sm">
+        <div class="border border-white rounded-lg p-3 h-32 flex items-center justify-center bg-white bg-opacity-10">
+          <img src="https://www.horlicks.in/cdn/shop/files/How-Horllicks-Help_1_51120b95-2b30-4058-a0f3-9ddfa3abde36.png?v=1726654974&width=1500" alt="Product" class="h-30 object-contain" />
+        </div>
+        <div class="bg-white text-center py-2 rounded-b-lg">
+          <p class="text-sm font-semibold">Family Nutrition</p>
+        </div>
+      </div>
+
+
+      
+      <!-- Card 9 -->
+      <div class="bg-yellow-300 rounded-lg p-2 shadow-sm">
+        <div class="border border-white rounded-lg p-3 h-32 flex items-center justify-center bg-white bg-opacity-10">
+          <img src="https://mendeserve.com/cdn/shop/products/Men_Grooming_Combo_of_Quality_Hair_Care_and_Beard_Care_Products_-_Men_Deserve.png?v=1751727624" alt="Product" class="h-25 object-contain" />
+        </div>
+        <div class="bg-white text-center py-2 rounded-b-lg">
+          <p class="text-sm font-semibold">Men Grooming </p>
+        </div>
+      </div>
+
+      
+      <!-- Card 10 -->
+      <div class="bg-yellow-300 rounded-lg p-2 shadow-sm">
+        <div class="border border-white rounded-lg p-3 h-32 flex items-center justify-center bg-white bg-opacity-10">
+          <img src="https://img.freepik.com/free-vector/feminine-hygiene-realistic-mockup-with-sanitary-pads-pack-vector-illustration_1284-76893.jpg" alt="Product" class="h-30 object-contain" />
+        </div>
+        <div class="bg-white text-center py-2 rounded-b-lg">
+          <p class="text-sm font-semibold">Feminine care</p>
+        </div>
+      </div>
+
+
+
+ </div>
+  </div>
+
+<!-- Section 3 -->
+  <!-- Product Section -->
+  <div class="space-y-4">
+    <div class="bg-white shadow-md rounded-lg p-4 flex gap-4 min-h-[280px]">
+      <div class="w-40 h-50 bg-gray-100 border border-gray-300 rounded-md flex items-center justify-center">
+        <img src="https://mendeserve.com/cdn/shop/products/Men_Grooming_Combo_of_Quality_Hair_Care_and_Beard_Care_Products_-_Men_Deserve.png?v=1751727624" alt="Product 1" class="max-h-full max-w-full object-contain p-4">
+      </div>
+      <div class="flex-1 flex flex-col gap-4">
+        <div>
+          <p class="text-xs text-gray-500">Sponsored</p>
+          <h2 class="text-sm font-semibold leading-tight">QUARANT Melt Blown - SMMS Fabric 3 Ply Disposable Face</h2>
+          <p class="text-sm text-orange-500 mt-1 font-semibold">4.3 ★★★★☆ <span class="text-gray-500">(17K)</span></p>
+          <p class="text-lg font-bold mt-1">₹299 <span class="text-sm text-gray-500">(₹5.98/count) M.R.P: <s>₹600</s> (50% off)</span></p>
+          <p class="text-sm text-gray-700 mt-1">45 Minutes Delivery</p>
+        </div>
+        <button class="bg-yellow-400 text-black font-bold rounded py-2 px-4 w-fit" onclick="addToCart('QUARANT Melt Blown - SMMS Fabric 3 Ply Disposable Face', 299)">Add to cart</button>
+      </div>
+    </div>
+  </div>
+
+    <!-- Product Section -->
+  <div class="space-y-4">
+    <div class="bg-white shadow-md rounded-lg p-4 flex gap-4 min-h-[280px]">
+      <div class="w-40 h-50 bg-gray-100 border border-gray-300 rounded-md flex items-center justify-center">
+        <img src="https://gspice.mx/cdn/shop/collections/Oils_and_Ghee_1200x1200.webp?v=1748584699" alt="Product 1" class="max-h-full max-w-full object-contain p-4">
+      </div>
+      <div class="flex-1 flex flex-col gap-4">
+        <div>
+          <p class="text-xs text-gray-500">Sponsored</p>
+          <h2 class="text-sm font-semibold leading-tight">QUARANT Melt Blown - SMMS Fabric 3 Ply Disposable Face</h2>
+          <p class="text-sm text-orange-500 mt-1 font-semibold">4.3 ★★★★☆ <span class="text-gray-500">(17K)</span></p>
+          <p class="text-lg font-bold mt-1">₹299 <span class="text-sm text-gray-500">(₹5.98/count) M.R.P: <s>₹600</s> (50% off)</span></p>
+          <p class="text-sm text-gray-700 mt-1">45 Minutes Delivery</p>
+        </div>
+        <button class="bg-yellow-400 text-black font-bold rounded py-2 px-4 w-fit" onclick="addToCart('QUARANT Melt Blown - SMMS Fabric 3 Ply Disposable Face', 299)">Add to cart</button>
+      </div>
+    </div>
+  </div>
+  
+
+<!-- Section 4 -->
+<div class="mt-8 bg-[#fffbea] p-4 rounded">
+  <h2 class="text-lg font-bold mb-2">Popular Products</h2>
+  <div class="flex overflow-x-auto space-x-4 md:grid md:grid-cols-2 md:space-x-0 md:gap-4">
+    
+    <!-- Card Example -->
+    <div class="bg-white shadow-sm rounded-md p-2 min-w-[250px] md:min-w-0 flex-shrink-0">
+      <div class="w-full h-40 bg-gray-100 border border-gray-300 rounded-md flex items-center justify-center">
+        <img src="adi.png" alt="Surf Excel" class="h-36 object-contain">
+      </div>
+      <h3 class="text-sm font-semibold mt-2">Surf Excel 3-in-1 Smart Shots Liquid Detergent</h3>
+      <p class="text-orange-500 text-sm font-semibold">★★★★★ <span class="text-gray-600 font-normal">2,431</span></p>
+      <p class="text-xs text-gray-500">3K+ bought in past month</p>
+      <p class="text-red-600 font-bold text-sm">-20% ₹420 <span class="text-xs text-gray-500">(₹15.00 / count)</span></p>
+      <p class="text-xs text-gray-500">M.R.P: <s>₹525.00</s></p>
+      <button class="bg-yellow-400 text-black font-bold rounded w-full mt-2 py-2"onclick="addToCart('QUARANT Melt Blown - SMMS Fabric 3 Ply Disposable Face', 299)">Add to cart</button>
+    </div>
+
+    <!-- Copy this card and change image/text for more products -->
+    <div class="bg-white shadow-sm rounded-md p-2 min-w-[250px] md:min-w-0 flex-shrink-0">
+      <div class="w-full h-40 bg-gray-100 border border-gray-300 rounded-md flex items-center justify-center">
+        <img src="other.png" alt="Other Product" class="h-36 object-contain">
+      </div>
+      <h3 class="text-sm font-semibold mt-2">Another Product Short Title</h3>
+      <p class="text-orange-500 text-sm font-semibold">★★★★☆ <span class="text-gray-600 font-normal">1,200</span></p>
+      <p class="text-xs text-gray-500">1K+ bought in past month</p>
+      <p class="text-red-600 font-bold text-sm">-15% ₹300 <span class="text-xs text-gray-500">(₹10.00 / count)</span></p>
+      <p class="text-xs text-gray-500">M.R.P: <s>₹350.00</s></p>
+      <button class="bg-yellow-400 text-black font-bold rounded w-full mt-2 py-2" onclick="addToCart('QUARANT Melt Blown - SMMS Fabric 3 Ply Disposable Face', 299)">Add to cart</button>
+    </div>
+
+        <!-- Copy this card and change image/text for more products -->
+    <div class="bg-white shadow-sm rounded-md p-2 min-w-[250px] md:min-w-0 flex-shrink-0">
+      <div class="w-full h-40 bg-gray-100 border border-gray-300 rounded-md flex items-center justify-center">
+        <img src="other.png" alt="Other Product" class="h-36 object-contain">
+      </div>
+      <h3 class="text-sm font-semibold mt-2">Another Product Short Title</h3>
+      <p class="text-orange-500 text-sm font-semibold">★★★★☆ <span class="text-gray-600 font-normal">1,200</span></p>
+      <p class="text-xs text-gray-500">1K+ bought in past month</p>
+      <p class="text-red-600 font-bold text-sm">-15% ₹300 <span class="text-xs text-gray-500">(₹10.00 / count)</span></p>
+      <p class="text-xs text-gray-500">M.R.P: <s>₹350.00</s></p>
+      <button class="bg-yellow-400 text-black font-bold rounded w-full mt-2 py-2"onclick="addToCart('QUARANT Melt Blown - SMMS Fabric 3 Ply Disposable Face', 299)">Add to cart</button>
+    </div>
+
+    </section>
+    <br>
+    <!-- Footer -->
+    <footer id="contact" class="gradient-bg text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <!-- About -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">SuperMart</h3>
+                    <p class="mb-4">Your one-stop shop for all daily needs with best quality and prices from A to Z.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="bg-white text-purple-600 rounded-full w-10 h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="#" class="bg-white text-purple-600 rounded-full w-10 h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="#" class="bg-white text-purple-600 rounded-full w-10 h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="#" class="bg-white text-purple-600 rounded-full w-10 h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:underline">Home</a></li>
+                        <li><a href="#" class="hover:underline">About Us</a></li>
+                        <li><a href="#" class="hover:underline">Products</a></li>
+                        <li><a href="#" class="hover:underline">Offers</a></li>
+                        <li><a href="#" class="hover:underline">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Categories -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Categories</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:underline">Grocery</a></li>
+                        <li><a href="#" class="hover:underline">Electronics</a></li>
+                        <li><a href="#" class="hover:underline">Fashion</a></li>
+                        <li><a href="#" class="hover:underline">Home & Kitchen</a></li>
+                        <li><a href="#" class="hover:underline">Beauty</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Contact Us</h3>
+                    <address class="not-italic">
+                        <p class="mb-2">MULTI MART STORE , 335512</p>
+                        <p class="mb-2">Email: deepuvarietystore873@gmail.com</p>
+                        <p>Phone: +91 89556 22801</p>
+                        <p>Phone: +91 88529 09296</p>
+                    </address>
+                </div>
+            </div>
+            
+            <div class="border-t border-white border-opacity-20 pt-8 text-center">
+                <p>© 2023 SuperMart. All Rights Reserved.</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+<footer class="bg-gray-900 text-white py-6 mt-12">
+  <div class="container mx-auto px-4 text-center">
+    <p class="text-sm mb-1">💻 Development by <span class="font-semibold text-purple-400">Amit</span></p>
+    <p class="text-xs">
+      📞 Contact: <a href="tel:8963021388" class="underline hover:text-purple-300">8963021388</a>
+    </p>
+  </div>
+</footer>
+    </footer>
+  <!-- BOTTOM NAVIGATION FIXED MENU -->
+  <div class="fixed bottom-0 left-0 right-0 bg-white shadow-md border-t flex justify-around items-center py-2 z-50">
+    <a href="index.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M4 10v10h5v-6h6v6h5V10" />
+      </svg>
+      Home
+    </a>
+    <a href="cart.html" class="relative flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l1.5 6H15l1.5-6M6 19a1 1 0 11-2 0 1 1 0 012 0zm12 0a1 1 0 11-2 0 1 1 0 012 0z" />
+      </svg>
+      Cart
+      <span id="cart-count-bottom" class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-1.5"></span>
+    </a>
+    <a href="orders.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12 h6m-6 4h6m-6-8h6m2-4h2a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+      </svg>
+      Orders
+    </a>
+    <a href="menu.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      Menu
+    </a>
+  </div>
+
+ <script>
+    function addToCart(name, price) {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const index = cart.findIndex(item => item.name === name);
+
+      if (index !== -1) {
+        cart[index].quantity += 1;
+      } else {
+        cart.push({ name, price, quantity: 1 });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCount();
+      showNotification();
+    }
+
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+      document.querySelectorAll("#cart-count, #cart-count-bottom")
+        .forEach(span => span.textContent = total);
+    }
+
+    function showNotification() {
+      const note = document.getElementById('notification');
+      note.style.display = 'block';
+      setTimeout(() => note.style.display = 'none', 2000);
+    }
+
+    function searchProducts() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const grid = document.getElementById('product-grid');
+      const items = grid.getElementsByClassName('deal-card');
+      let found = false;
+
+      for (let card of items) {
+        const name = card.getAttribute('data-name').toLowerCase();
+        const match = name.includes(query);
+        card.style.display = match ? 'flex' : 'none';
+        if (match) found = true;
+      }
+
+      document.getElementById('searchResults').style.display = found ? 'block' : 'none';
+    }
+  </script>
+  <script>
+  const products = [
+    {
+      name: "QUARANT Melt Blown - SMMS Fabric 3 Ply Disposable Face",
+      price: 299,
+      image: "a.png",
+      link: "#"  // optional: product page link
+    },
+    {
+      name: "Surf Excel 3-in-1 Smart Shots Liquid Detergent",
+      price: 420,
+      image: "adi.png",
+      link: "#"
+    },
+    // Yahan jitne product hain, unka naam, price, image daal do
+  ];
+</script>
+<script>
+  function searchProducts() {
+    const query = document.getElementById("searchInput").value.toLowerCase();
+    const resultsContainer = document.getElementById("searchResultsContainer");
+    const resultsSection = document.getElementById("searchResults");
+
+    resultsContainer.innerHTML = ""; // Clear previous
+
+    const filtered = products.filter(p => p.name.toLowerCase().includes(query));
+
+    if (filtered.length === 0) {
+      resultsSection.style.display = "none";
+      return;
+    }
+
+    filtered.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "bg-white shadow p-4 rounded-md";
+      div.innerHTML = `
+        <img src="${p.image}" alt="${p.name}" class="w-full h-40 object-contain mb-2">
+        <h3 class="text-sm font-bold mb-1">${p.name}</h3>
+        <p class="text-red-600 font-semibold">₹${p.price}</p>
+        <button onclick="addToCart('${p.name}', ${p.price})" class="mt-2 w-full bg-yellow-400 text-black font-bold py-1 rounded">Add to cart</button>
+      `;
+      resultsContainer.appendChild(div);
+    });
+
+    resultsSection.style.display = "block";
+  }
+</script>
+
+</body>
+</html>

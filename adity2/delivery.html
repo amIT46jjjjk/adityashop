@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi Mart Store | Order Confirmation</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <style>
+    body  {
+      font-family: Arial, sans-serif;
+      background-color: black; /* Set background color to black */
+      color: white; /* Set text color to white for better contrast */
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #e80606 100%);
+    }
+    .loading-screen {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.8);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/76865a68-f7ef-477b-8c9d-c0954338721a.png" alt="SuperMart Logo" class="rounded-full w-10 h-10" />
+      <div class="leading-tight">
+        <div class="text-xl font-bold">SuperMart</div>
+        <div class="text-xs text-gray-200 ml-1 tracking-wide">Offers and Deals</div>
+      </div>
+    </div>
+    <div class="flex items-center space-x-4">
+      <a href="#notifications" aria-label="Notifications">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white hover:text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V5a1 1 0 10-2 0v.083A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+      </a>
+      <a href="cart.html" class="relative flex items-center">
+        <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" class="w-6 h-6" />
+        <span id="cart-count-top" class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Order Summary Section -->
+<div class="max-w-xl mx-auto mt-6 bg-gray-800 border border-gray-600 rounded shadow p-6">
+  <h2 class="text-2xl font-bold text-center mb-6">Order Summary</h2>
+
+  <!-- Customer Details -->
+  <div class="mb-6 p-4 border rounded bg-gray-700">
+    <h3 class="font-bold text-lg mb-2">Delivery Address</h3>
+    <div id="customerDetails" class="space-y-1">
+      <p class="flex items-center">
+        <span class="w-20 font-medium">Name:</span>
+        <span id="customerName"></span>
+      </p>
+      <p class="flex items-center">
+        <span class="w-20 font-medium">Mobile:</span>
+        <span id="customerMobile"></span>
+      </p>
+      <p class="flex items-center">
+        <span class="w-20 font-medium">Address:</span>
+        <span id="customerAddress"></span>
+      </p>
+    </div>
+  </div>
+
+  <!-- Order Details -->
+  <div class="mb-4">
+    <h3 class="font-bold">Order Details</h3>
+    <div id="orderItems" class="space-y-2"></div>
+  </div>
+
+  <!-- Pricing Details -->
+  <div class="mb-4">
+    <h3 class="font-bold">Pricing Details</h3>
+    <div class="flex justify-between">
+      <span>Subtotal:</span>
+      <span id="subtotalAmount">0</span>
+    </div>
+    <div class="flex justify-between">
+      <span>Delivery Fees:</span>
+      <span id="deliveryFees">50</span>
+    </div>
+    <div class="flex justify-between">
+      <span>Discount:</span>
+      <span id="discountAmount">0</span>
+    </div>
+    <div class="flex justify-between font-bold">
+      <span>Total Amount:</span>
+      <span id="totalAmount">0</span>
+    </div>
+  </div>
+
+  <button onclick="placeOrder()" class="w-full bg-purple-600 text-white font-bold py-2 rounded mt-4">Order Now</button>
+</div>
+
+<!-- Loading Screen -->
+<div class="loading-screen flex">
+  <div class="text-center">
+    <h2 class="text-2xl font-bold">Processing your order...</h2>
+    <p>Please wait for confirmation.</p>
+    <div class="loader"></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAVIGATION FIXED MENU -->
+<div class="fixed bottom-0 left-0 right-0 bg-white shadow-md border-t flex justify-around items-center py-2 z-50">
+  <a href="index.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M4 10v10h5v-6h6v6h5V10" />
+    </svg>
+    Home
+  </a>
+  <a href="cart.html" class="relative flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l1.5 6H15l1.5-6M6 19a1 1 0 11-2 0 1 1 0 012 0zm12 0a1 1 0 11-2 0 1 1 0 012 0z" />
+    </svg>
+    Cart
+    <span id="cart-count-bottom" class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-1.5">0</span>
+  </a>
+  <a href="orders.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m-6-8h6m2-4h2a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+    </svg>
+    Orders
+  </a>
+  <a href="menu.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+    Menu
+  </a>
+</div>
+
+<script>
+  // Load customer details and order items from local storage
+  window.onload = function() {
+    const address = JSON.parse(localStorage.getItem("deliveryAddress"));
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const deliveryFees = 50; // Example delivery fee
+    const discountAmount = 0; // Example discount
+
+    // Display customer details
+    if (address) {
+      document.getElementById("customerName").textContent = address.name;
+      document.getElementById("customerMobile").textContent = address.mobile;
+      document.getElementById("customerAddress").textContent = 
+        `${address.flat}, ${address.area}, ${address.pincode}`;
+    }
+
+    // Display order items and calculate subtotal
+    let subtotal = 0;
+    const orderItemsContainer = document.getElementById("orderItems");
+    cart.forEach(item => {
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'flex items-center justify-between border-b pb-4 mb-4';
+      itemDiv.innerHTML = `
+        <div class="flex items-center">
+          <img src="${item.image || 'https://via.placeholder.com/80'}" class="w-16 h-16 object-cover mr-4" alt="${item.name}">
+          <div>
+            <p class="font-medium">${item.name}</p>
+            <p class="text-sm text-gray-400">Quantity: ${item.quantity || 1}</p>
+          </div>
+        </div>
+        <span class="font-medium">${item.price} ₹</span>
+      `;
+      orderItemsContainer.appendChild(itemDiv);
+      subtotal += (item.price * (item.quantity || 1)); // Calculate subtotal with quantity
+    });
+
+    // Update pricing details
+    document.getElementById("subtotalAmount").innerText = subtotal + " ₹";
+    document.getElementById("deliveryFees").innerText = deliveryFees + " ₹";
+    document.getElementById("discountAmount").innerText = discountAmount + " ₹";
+    document.getElementById("totalAmount").innerText = (subtotal + deliveryFees - discountAmount) + " ₹";
+  };
+
+  function placeOrder() {
+    const address = JSON.parse(localStorage.getItem("deliveryAddress"));
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    
+    // Prepare order details for Telegram
+    let orderDetails = `New Order Received!\n\n`;
+    orderDetails += `Customer: ${address.name}\n`;
+    orderDetails += `Mobile: ${address.mobile}\n`;
+    orderDetails += `Address: ${address.flat}, ${address.area}, ${address.pincode}\n\n`;
+    orderDetails += `Items:\n`;
+    
+    cart.forEach(item => {
+      orderDetails += `- ${item.name} (Qty: ${item.quantity || 1}) - ${item.price} ₹\n`;
+    });
+    
+    // Telegram bot API call
+    const botToken = 'YOUR_TELEGRAM_BOT_TOKEN';
+    const chatId = 'YOUR_CHAT_ID';
+    const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+    
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: orderDetails
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      alert("Order placed successfully! We'll notify you soon.");
+      localStorage.removeItem('cart');
+      window.location.href = "index.html";
+    })
+    .catch(error => {
+      console.error('Error sending to Telegram:', error);
+      alert("Order placed but notification failed. We'll contact you soon.");
+      localStorage.removeItem('cart');
+      window.location.href = "index.html";
+    });
+  }
+</script>
+<script>
+  div.onclick = function () {
+  localStorage.setItem("selectedProduct", JSON.stringify(product));
+  window.location.href = "product.html";
+};
+</script>
+
+</body>
+</html>

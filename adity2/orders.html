@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Orders - Multi Mart Store</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7fa;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #e80606 100%);
+    }
+    .status-pending { background-color: #fbbf24; color: white; }
+    .status-accepted { background-color: #22c55e; color: white; }
+    .status-rejected { background-color: #ef4444; color: white; }
+    .status-delivered { background-color: #2563eb; color: white; }
+    .status-late { background-color: #f97316; color: white; }
+    .notification-dot {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background-color: red;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #ffffff;
+      border-top: 1px solid #ccc;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 50;
+    }
+    .bottom-nav a {
+      font-size: 12px;
+      color: #4B5563;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bottom-nav a:hover {
+      color: #7C3AED;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- Navigation Bar -->
+  <nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/76865a68-f7ef-477b-8c9d-c0954338721a.png" alt="SuperMart Logo" class="rounded-full w-10 h-10" />
+        <div class="leading-tight">
+          <div class="text-xl font-bold">SuperMart</div>
+          <div class="text-xs text-gray-200 ml-1 tracking-wide">Offers and Deals</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header / Navbar -->
+  <nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg px-4 py-3 flex justify-between items-center">
+    <div class="text-xl font-bold">🧾 My Orders</div>
+    <a href="notification.html" class="relative">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white hover:text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V5a1 1 0 10-2 0v.083A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+      </svg>
+      <span id="notifDot" class="notification-dot hidden"></span>
+    </a>
+  </nav>
+
+  <!-- Orders -->
+  <div class="max-w-2xl mx-auto p-4 space-y-4" id="ordersContainer"></div>
+  <div id="emptyMsg" class="text-center text-gray-500 mt-10 hidden">
+    <p class="text-lg">No orders found.</p>
+  </div>
+
+  <!-- Script -->
+  <script>
+    const ordersContainer = document.getElementById("ordersContainer");
+    const emptyMsg = document.getElementById("emptyMsg");
+    let myOrders = JSON.parse(localStorage.getItem("myOrders")) || [];
+
+    if (myOrders.length === 0) {
+      emptyMsg.classList.remove("hidden");
+    } else {
+      myOrders.slice().reverse().forEach(order => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "bg-white p-4 rounded shadow space-y-2";
+
+        const statusClass = {
+          accepted: "status-accepted",
+          rejected: "status-rejected",
+          pending: "status-pending",
+          delivered: "status-delivered",
+          late: "status-late"
+        }[order.status] || "status-pending";
+
+        const productHTML = order.items.map(item => `
+          <div class="flex justify-between items-center border-b pb-2">
+            <div class="flex items-center space-x-2">
+              <img src="${item.image}" class="w-12 h-12 rounded border object-cover" alt="${item.name}" />
+              <div>
+                <p class="font-semibold">${item.name}</p>
+                <p class="text-xs text-gray-500">Qty: ${item.quantity}</p>
+              </div>
+            </div>
+            <p class="text-gray-800 font-medium">₹${item.price}</p>
+          </div>
+        `).join("");
+
+        wrapper.innerHTML = `
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-bold">Order ID: ${order.id}</h3>
+            <span class="text-xs px-2 py-1 rounded ${statusClass}" id="order-status-${order.id}">${order.status.toUpperCase()}</span>
+          </div>
+          ${productHTML}
+          <p class="text-sm text-gray-600">📅 Placed on: ${order.date}</p>
+          <p class="text-sm text-gray-600">🚚 Estimated Delivery: ${order.deliveryTime}</p>
+          <div class="text-red-600 font-bold text-sm" id="timer-${order.id}"></div>
+        `;
+
+        ordersContainer.appendChild(wrapper);
+
+        // ✅ Always poll the order status (live updates)
+        pollStatus(order.id);
+
+        // ✅ Start countdown only if accepted
+        if (order.status === 'accepted') {
+          startTimer(order.id, 45);
+        }
+      });
+    }
+
+    function startTimer(orderId, durationMin) {
+      const timerEl = document.getElementById(`timer-${orderId}`);
+
+      // 1. Check if endTime is already saved
+      let endTime = localStorage.getItem(`timer_end_${orderId}`);
+
+      if (!endTime) {
+        // If not, calculate and store it
+        endTime = Date.now() + durationMin * 60 * 1000;
+        localStorage.setItem(`timer_end_${orderId}`, endTime);
+      } else {
+        endTime = parseInt(endTime);
+      }
+
+      const interval = setInterval(() => {
+        const now = Date.now();
+        const timeLeft = Math.floor((endTime - now) / 1000);
+
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          timerEl.textContent = "⚠️ Delivery time exceeded!";
+          return;
+        }
+
+        const min = Math.floor(timeLeft / 60);
+        const sec = timeLeft % 60;
+        timerEl.textContent = `⏳ Time left: ${min}m ${sec}s`;
+
+        // 🔔 2 minute delay notification
+        if (timeLeft === (durationMin * 60 - 120)) {
+          fetch("http://localhost:5000/late-delivery", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderId })
+          });
+
+          // ✅ Also push to local notification
+          const message = `Sorry! Order #${orderId} is running late. Please wait 10 mins more.`;
+          pushNotification("delayed", message);
+        }
+
+      }, 1000);
+    }
+
+    function pollStatus(orderId) {
+      const interval = setInterval(async () => {
+        try {
+          const res = await fetch(`http://localhost:5000/status/${orderId}`);
+          const data = await res.json();
+
+          const currentStatus = data.status;
+          let orders = JSON.parse(localStorage.getItem("myOrders")) || [];
+          const index = orders.findIndex(o => o.id == orderId);
+
+          if (index !== -1 && orders[index].status !== currentStatus) {
+            orders[index].status = currentStatus;
+            localStorage.setItem("myOrders", JSON.stringify(orders));
+
+            // Update the status in the UI without reloading
+            const statusElement = document.getElementById(`order-status-${orderId}`);
+            if (statusElement) {
+              statusElement.className = `text-xs px-2 py-1 rounded ${{
+                accepted: "status-accepted",
+                rejected: "status-rejected",
+                pending: "status-pending",
+                delivered: "status-delivered",
+                late: "status-late"
+              }[currentStatus] || "status-pending"}`;
+              statusElement.textContent = currentStatus.toUpperCase();
+            }
+
+            // 🔔 Notification
+            pushNotification("status_change", `Your order #${orderId} is now ${currentStatus.toUpperCase()}`);
+
+            clearInterval(interval); // ✅ Stop polling
+          }
+        } catch (e) {
+          console.error("Polling Error:", e);
+        }
+      }, 5000); // every 5 seconds
+    }
+
+    // 🔔 Show notification dot
+    window.onload = function () {
+      const notif = localStorage.getItem("orderNotification");
+      const msg = localStorage.getItem("orderNotificationMsg");
+      if (notif === "yes") {
+        document.getElementById("notifDot").classList.remove("hidden");
+        if (msg) alert(msg);
+        localStorage.removeItem("orderNotificationMsg");
+
+        setTimeout(() => {
+          document.getElementById("notifDot").classList.add("hidden");
+          localStorage.setItem("orderNotification", "no");
+        }, 5000);
+      }
+    };
+
+    function pushNotification(type, message) {
+      const notifs = JSON.parse(localStorage.getItem("notifications")) || [];
+      notifs.push({
+        type: type,
+        message: message,
+        time: new Date().toLocaleString()
+      });
+      localStorage.setItem("notifications", JSON.stringify(notifs));
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi Mart Store | Payment</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .selected-payment {
+      border: 2px solid #7C3AED;
+      background-color: #F3E8FF;
+    }
+    .check {
+      float: right;
+      color: green;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #ffffff;
+      border-top: 1px solid #ccc;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 50;
+    }
+    .bottom-nav a {
+      font-size: 12px;
+      color: #4B5563;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bottom-nav a:hover {
+      color: #7C3AED;
+    }
+    .bottom-nav svg {
+      width: 20px;
+      height: 20px;
+      margin-bottom: 2px;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-purple-100 via-white to-purple-200 min-h-screen text-gray-800 pb-16">
+
+  <!-- Header -->
+  <header class="bg-purple-200 shadow-md py-4 px-6 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-purple-800">Multi Mart Store</h1>
+    <div class="flex space-x-4 items-center">
+      <a href="#notifications" aria-label="Notifications">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-purple-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V5a1 1 0 10-2 0v.083A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+      </a>
+      <a href="#cart" aria-label="Cart">
+        <span id="cartCount" class="text-purple-800">0</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-purple-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h14l-1.35 6.72a1 1 0 01-.98.78H8.35a1 1 0 01-.98-.78L5 6H3" />
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- Delivery Address -->
+  <div class="max-w-xl mx-auto mt-6 bg-white border border-gray-300 rounded shadow p-6">
+    <h2 class="text-2xl font-bold text-center mb-4">Delivery Address</h2>
+    <div id="deliveryAddress" class="text-sm text-gray-700"></div>
+  </div>
+
+  <!-- Payment Section -->
+  <div class="max-w-xl mx-auto mt-6 bg-white border border-gray-300 rounded shadow p-6">
+    <h2 class="text-2xl font-bold text-center mb-6">Payment Options</h2>
+    <div id="paymentOptions" class="space-y-4">
+      <div class="border rounded p-4 cursor-pointer" onclick="selectPayment(this, 'UPI Payment')">
+        <h3 class="font-bold mb-1">UPI Payment</h3>
+        <span class="check hidden">✔</span>
+        <p class="text-sm text-gray-600">Coming Soon</p>
+      </div>
+      <div class="border rounded p-4 cursor-pointer" onclick="selectPayment(this, 'Credit/Debit Card')">
+        <h3 class="font-bold mb-1">Credit/Debit Card</h3>
+        <span class="check hidden">✔</span>
+        <p class="text-sm text-gray-600">Coming Soon</p>
+      </div>
+      <div class="border rounded p-4 cursor-pointer" onclick="selectPayment(this, 'Net Banking')">
+        <h3 class="font-bold mb-1">Net Banking</h3>
+        <span class="check hidden">✔</span>
+        <p class="text-sm text-gray-600">Coming Soon</p>
+      </div>
+      <div class="border rounded p-4 cursor-pointer" onclick="selectPayment(this, 'Cash on Delivery')">
+        <h3 class="font-bold mb-1">Cash on Delivery</h3>
+        <span class="check hidden">✔</span>
+        <p class="text-sm text-green-600">Available</p>
+      </div>
+    </div>
+
+    <button onclick="proceedToBuy()" class="w-full bg-purple-600 text-white font-bold py-2 rounded mt-6">
+      Proceed to Buy
+    </button>
+  </div>
+
+  <!-- Sticky Bottom Navigation -->
+  <div class="bottom-nav sm:hidden">
+    <a href="index.html">
+      <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 2L2 7v11h5v-7h6v7h5V7z"/></svg>
+      Home
+    </a>
+    <a href="cart.html">
+      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h14l-1.35 6.72a1 1 0 01-.98.78H8.35a1 1 0 01-.98-.78L5 6H3"/></svg>
+      Cart
+    </a>
+    <a href="#my-orders">
+      <svg fill="currentColor" viewBox="0 0 20 20"><path d="M4 4h12v2H4V4zm0 4h12v2H4V8zm0 4h12v2H4v-2z"/></svg>
+      My Orders
+    </a>
+    <a href="#menu">
+      <svg fill="currentColor" viewBox="0 0 20 20"><path d="M4 6h12v2H4V6zm0 4h12v2H4v-2zm0 4h12v2H4v-2z"/></svg>
+      Menu
+    </a>
+  </div>
+
+  <!-- JS Script -->
+  <script>
+    let selectedPayment = "";
+
+    window.onload = function () {
+      const address = JSON.parse(localStorage.getItem("deliveryAddress"));
+      if (address) {
+        document.getElementById("deliveryAddress").innerHTML = `
+          <p><strong>Name:</strong> ${address.name}</p>
+          <p><strong>Mobile:</strong> ${address.mobile}</p>
+          <p><strong>Address:</strong> ${address.flat}, ${address.area}, ${address.pincode}</p>
+        `;
+      }
+
+      const savedPayment = localStorage.getItem("selectedPaymentMethod");
+      if (savedPayment) {
+        selectedPayment = savedPayment;
+        const options = document.querySelectorAll("#paymentOptions > div");
+        options.forEach(option => {
+          const method = option.querySelector("h3").innerText;
+          if (method === savedPayment) {
+            option.classList.add("selected-payment");
+            option.querySelector(".check").classList.remove("hidden");
+          }
+        });
+      }
+
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      document.getElementById("cartCount").innerText = cart.length;
+    };
+
+    function selectPayment(div, method) {
+      document.querySelectorAll("#paymentOptions > div").forEach(el => {
+        el.classList.remove("selected-payment");
+        el.querySelector(".check").classList.add("hidden");
+      });
+
+      div.classList.add("selected-payment");
+      div.querySelector(".check").classList.remove("hidden");
+      selectedPayment = method;
+      localStorage.setItem("selectedPaymentMethod", method);
+    }
+
+    function proceedToBuy() {
+      if (!selectedPayment) {
+        alert("Please select a payment method.");
+        return;
+      }
+
+      alert(`Order placed using ${selectedPayment}! ✅`);
+      localStorage.removeItem("cart");
+      localStorage.removeItem("selectedPaymentMethod");
+
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Grocery - Multi Mart Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0b0b0b, #c0b683); /* Pink to Gold Gradient */
+      color: #222;
+    }
+
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #e80606 100%);
+    }
+
+    .notification {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #fbbf24; /* Yellow */
+      color: black;
+      padding: 10px 20px;
+      border-radius: 5px;
+      z-index: 1000;
+    }
+
+    .flex {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;     /* Firefox */
+    }
+
+    /* Remove horizontal scroll bar */
+    .flex::-webkit-scrollbar {
+      display: none;
+    }
+
+    .section {
+      background-color: black; /* Set section background to black */
+      padding: 20px;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+
+    .section-title {
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .product {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .product h4 {
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    .footer {
+      background-color: #232f3e;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 14px;
+      margin-top: 40px;
+    }
+
+    .slider {
+      position: relative;
+      overflow: hidden;
+      margin: 2rem 0;
+    }
+
+    .slider-images {
+      display: flex;
+      transition: transform 0.5s ease;
+    }
+
+    .slider-image {
+      min-width: 100%;
+      height: auto;
+    }
+        .sidebar {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+  </style>
+</head>
+<body onload="updateCartCount()">
+
+  <!-- Notification -->
+  <div id="notification" class="notification">Item successfully added to cart!</div>
+
+  <!-- Navigation Bar -->
+  <nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/76865a68-f7ef-477b-8c9d-c0954338721a.png" alt="SuperMart Logo" class="rounded-full w-10 h-10" />
+        <div class="leading-tight">
+          <div class="text-xl font-bold">SuperMart</div>
+          <div class="text-xs text-gray-200 ml-1 tracking-wide">Beauty</div>
+        </div>
+      </div>
+      <div class="relative">
+        <a href="cart.html" class="flex items-center text-gray-200 hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l1.5 6H15l1.5-6M6 19a1 1 0 11-2 0 1 1 0 012 0zm12 0a1 1 0 11-2 0 1 1 0 012 0z" />
+          </svg>
+          <span id="cart-count" class="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1">0</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Search Bar -->
+  <div class="container mx-auto mt-4 px-4">
+    <div class="flex items-center w-full border border-gray-300 rounded overflow-hidden">
+      <input 
+        type="text" 
+        id="searchInput" 
+        placeholder="Search for products..." 
+        class="flex-grow p-3 outline-none min-w-0 text-sm" 
+        oninput="searchProducts()"
+      />
+      <button class="text-gray-500 p-2 flex-shrink-0" onclick="searchProducts()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Search Results Container -->
+  <div id="searchResults" class="px-4 mt-4 hidden">
+    <h3 class="text-xl font-bold mb-2 text-purple-700">🔍 Search Results:</h3>
+    <div id="searchResultsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <!-- JS will fill this -->
+    </div>
+  </div>
+  <br>
+
+  <!-- Category Section -->
+  <div class="bg-black px-4 pt-6 pb-4">
+    <div class="flex overflow-x-auto space-x-6">
+      <!-- Example Category Items -->
+      <div class="flex flex-col items-center category cursor-pointer" data-category="derma">
+        <div class="relative w-24 h-24 rounded-full border-4 border-yellow-400 bg-blue-100">
+          <img src="https://www.ftune.in/cdn/shop/files/5_copy.png?v=1687619333&width=3200"
+               class="w-20 h-20 object-contain absolute bottom-0 left-1/2 transform -translate-x-1/2" />
+        </div>
+        <span class="text-sm mt-3 font-medium text-center text-yellow-700">Derma Skincare</span>
+      </div>
+
+      <div class="flex flex-col items-center category cursor-pointer" data-category="skincare">
+        <div class="relative w-24 h-24 rounded-full border-4 border-yellow-400 bg-yellow-100">
+          <img src="https://www.pngplay.com/wp-content/uploads/7/Grocery-Items-PNG-HD-Quality.png"
+               class="w-20 h-20 object-contain absolute bottom-0 left-1/2 transform -translate-x-1/2" />
+        </div>
+        <span class="text-sm mt-3 font-medium text-center text-yellow-700">Skincare</span>
+      </div>
+
+      <div class="flex flex-col items-center category cursor-pointer" data-category="haircare">
+        <div class="relative w-24 h-24 rounded-full border-4 border-yellow-400 bg-yellow-100">
+          <img src="https://beautyinsider.sg/wp-content/uploads/2016/08/hask-hair.jpg"
+               class="w-20 h-20 object-contain absolute bottom-0 left-1/2 transform -translate-x-1/2" />
+        </div>
+        <span class="text-sm mt-3 font-medium text-center text-yellow-700">Hair Care</span>
+      </div>
+
+            <div class="flex flex-col items-center category cursor-pointer" data-category="haircare">
+        <div class="relative w-24 h-24 rounded-full border-4 border-yellow-400 bg-yellow-100">
+          <img src="https://proteingodam.com/wp-content/uploads/2024/06/Regular-Mass-Gainer-5Kg-Peanut-Butter-Shaker-T-Shirt.webp"
+               class="w-20 h-20 object-contain absolute bottom-0 left-1/2 transform -translate-x-1/2" />
+        </div>
+        <span class="text-sm mt-3 font-medium text-center text-yellow-700">Luxury Beauty</span>
+      </div>
+
+
+
+            <div class="flex flex-col items-center category cursor-pointer" data-category="haircare">
+        <div class="relative w-24 h-24 rounded-full border-4 border-yellow-400 bg-yellow-100">
+          <img src="https://proteingodam.com/wp-content/uploads/2024/06/Regular-Mass-Gainer-5Kg-Peanut-Butter-Shaker-T-Shirt.webp"
+               class="w-20 h-20 object-contain absolute bottom-0 left-1/2 transform -translate-x-1/2" />
+        </div>
+        <span class="text-sm mt-3 font-medium text-center text-yellow-700">Makeup</span>
+      </div>
+
+
+
+            <div class="flex flex-col items-center category cursor-pointer" data-category="haircare">
+        <div class="relative w-24 h-24 rounded-full border-4 border-yellow-400 bg-yellow-100">
+          <img src="https://proteingodam.com/wp-content/uploads/2024/06/Regular-Mass-Gainer-5Kg-Peanut-Butter-Shaker-T-Shirt.webp"
+               class="w-20 h-20 object-contain absolute bottom-0 left-1/2 transform -translate-x-1/2" />
+        </div>
+        <span class="text-sm mt-3 font-medium text-center text-yellow-700">Fragrance & Does</span>
+      </div>
+
+
+            <div class="flex flex-col items-center category cursor-pointer" data-category="haircare">
+        <div class="relative w-24 h-24 rounded-full border-4 border-yellow-400 bg-yellow-100">
+          <img src="https://proteingodam.com/wp-content/uploads/2024/06/Regular-Mass-Gainer-5Kg-Peanut-Butter-Shaker-T-Shirt.webp"
+               class="w-20 h-20 object-contain absolute bottom-0 left-1/2 transform -translate-x-1/2" />
+        </div>
+        <span class="text-sm mt-3 font-medium text-center text-yellow-700">Bath & Shower</span>
+      </div>
+
+
+      <!-- Add more categories here -->
+    </div>
+  </div>
+
+  <!-- Sidebar for displaying products -->
+  <div id="sidebar" class="sidebar hidden w-full p-4">
+    <h2 class="text-lg font-bold mb-4 text-center text-yellow-700">Choose Category</h2>
+    <div id="product-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
+  </div>
+
+
+
+<script>
+  const categories = {
+    derma: [
+      {
+        name: "Skin Glow Cream",
+        img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/5b80f52e-1731-4776-b513-96dc3c6fe579.png",
+        href: "skinglowcrem.html"
+      },
+      {
+        name: "Skin Glow Serum",
+        img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/5b80f52e-1731-4776-b513-96dc3c6fe579.png",
+        href: "products/skin-glow-serum.html"
+      },
+      {
+        name: "Anti-Age Cream",
+        img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/930c95c9-7d37-4ab3-8d18-72a8e4768f40.png",
+        href: "products/anti-age-cream.html"
+      }
+    ],
+    skincare: [
+      {
+        name: "Moisturizer",
+        img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/49a45b11-7c67-48c0-87fe-b45c460ef944.png",
+        href: "products/moisturizer.html"
+      },
+      {
+        name: "Face Wash",
+        img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/59095a65-bcb4-4732-9a7a-782148a71183.png",
+        href: "products/face-wash.html"
+      }
+    ],
+    haircare: [
+      {
+        name: "Oil",
+        img: "https://beautyinsider.sg/wp-content/uploads/2016/08/hask-hair.jpg",
+        href: "products/hair-oil.html"
+      },
+      {
+        name: "Serum",
+        img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/38db0c78-228c-4f18-9c33-c0296e764380.png",
+        href: "products/hair-serum.html"
+      }
+    ],
+    luxury: [
+      {
+        name: "Luxury Perfume",
+        img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/12345678-luxury-perfume.png",
+        href: "products/luxury-perfume.html"
+      },
+      {
+        name: "Luxury Cream",
+        img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/12345678-luxury-cream.png",
+        href: "products/luxury-cream.html"
+      }
+    ],
+    makeup: [
+      {
+        name: "Lipstick",
+        img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/12345678-lipstick.png",
+        href: "products/lipstick.html"
+      },
+      {
+        name: "Foundation",
+        img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/12345678-foundation.png",
+        href: "products/foundation.html"
+      }
+    ],
+    fragrance: [
+      {
+        name: "Eau de Toilette",
+        img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/12345678-eau-de-toilette.png",
+        href: "products/eau-de-toilette.html"
+      },
+      {
+        name: "Perfume Oil",
+        img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/12345678-perfume-oil.png",
+        href: "products/perfume-oil.html"
+      }
+    ],
+    bath_shower: [
+      {
+        name: "Shower Gel",
+        img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/12345678-shower-gel.png",
+        href: "products/shower-gel.html"
+      },
+      {
+        name: "Bath Bombs",
+        img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/12345678-bath-bombs.png",
+        href: "products/bath-bombs.html"
+      }
+    ]
+  };
+
+  let currentCategory = "";
+
+  document.querySelectorAll('.category').forEach(item => {
+    item.addEventListener('click', () => {
+      const category = item.getAttribute('data-category');
+      const sidebar = document.getElementById('sidebar');
+      const productList = document.getElementById('product-list');
+
+      if (currentCategory === category) {
+        sidebar.classList.toggle('hidden');
+        return;
+      }
+
+      currentCategory = category;
+      const products = categories[category] || [];
+      productList.innerHTML = '';
+
+      products.forEach(product => {
+        const div = document.createElement('div');
+        div.className = 'text-center';
+        div.innerHTML = `
+          <a href="${product.href}" class="block hover:scale-105 transition-transform duration-200">
+            <img src="${product.img}" class="w-24 h-24 rounded-lg mx-auto mb-2" alt="${product.name}">
+            <span class="text-sm font-medium block">${product.name}</span>
+          </a>
+        `;
+        productList.appendChild(div);
+      });
+
+      sidebar.classList.remove('hidden');
+    });
+  });
+</script>
+
+
+
+  <!-- Image Slider Section -->
+  <div class="slider mt-8">
+    <div class="slider-images">
+      <img src="https://cdn.shopify.com/s/files/1/0428/8063/0937/files/900x1150_04310c20-29f5-4289-991f-4887e7dc3c0b.jpg?v=1742816031" class="slider-image" alt="Image 1" />
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO_28FllCy5Z_1O5v3Z4SgcRATgYtRQcTuaA&s" class="slider-image" alt="Image 2" />
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfOWVhpHpU-Bv84ggZ9peeXnIED7nYIuyuyw&s" class="slider-image" alt="Image 3" />
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSudzZ0aawZEgCbKHvp7AO44WFXPUkMH48Dqw&s" class="slider-image" alt="Image 4" />
+    </div>
+  </div>
+
+
+
+    <!-- 🟡 SECTION 2: Light Yellow BG with Category Boxes -->
+  <div class="bg-purpule-100 px-4 py-6">
+    <h2 class="text-lg font-semibold mb-4">Top categories to shop from</h2>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <!-- Card 1 -->
+      <div class="bg-pink-300 rounded-lg p-2 shadow-sm">
+        <div class="border border-white rounded-lg p-3 h-32 flex items-center justify-center bg-white bg-opacity-10">
+          <img src="https://warangalmarket.com/wp-content/uploads/2025/05/hom.png" alt="Product" class="h-28 object-contain" />
+        </div>
+        <div class="bg-white text-center py-2 rounded-b-lg">
+          <p class="text-sm font-semibold">Laundry & Cleaners</p>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="bg-pink-300 rounded-lg p-2 shadow-sm">
+        <div class="border border-white rounded-lg p-3 h-32 flex items-center justify-center bg-white bg-opacity-10">
+          <img src="https://wallpapers.com/images/hd/variety-protein-supplements-containers-xjufhfgepltsncbv.png" alt="Product" class="h-35 object-contain" />
+        </div>
+        <div class="bg-white text-center py-2 rounded-b-lg">
+          <p class="text-sm font-semibold">Sports Nutrition</p>
+        </div>
+      </div>
+
+
+
+     
+      <!-- Card 3 -->
+      <div class="bg-pink-300 rounded-lg p-2 shadow-sm">
+       <a href = "khulamaal.html"> <div class="border border-white rounded-lg p-3 h-32 flex items-center justify-center bg-white bg-opacity-10">
+          <img src="https://img.freepik.com/free-photo/vibrant-colors-spices-row-generated-by-ai_188544-34391.jpg?w=360" alt="Product" class="h-40 object-contain" />
+        </div>
+        <div class="bg-white text-center py-2 rounded-b-lg">
+          <p class="text-sm font-semibold"> Gram Msale </p></a>
+        </div>
+      </div>
+
+
+ 
+
+
+            <!-- Card 4 -->
+      <div class="bg-pink-300 rounded-lg p-2 shadow-sm">
+        <div class="border border-white rounded-lg p-3 h-32 flex items-center justify-center bg-white bg-opacity-10">
+          <img src="https://gspice.mx/cdn/shop/collections/Oils_and_Ghee_1200x1200.webp?v=1748584699" alt="Product" class="h-30 object-contain" />
+        </div>
+        <div class="bg-white text-center py-2 rounded-b-lg">
+          <p class="text-sm font-semibold">Oil & Ghee</p>
+        </div>
+      </div>
+</div>
+<br><br>
+
+
+<div>
+<!-- Section 3 -->
+  <!-- Product Section -->
+  <div class="space-y-4">
+    <div class="bg-white shadow-md rounded-lg p-4 flex gap-4 min-h-[280px]">
+      <div class="w-40 h-50 bg-gray-100 border border-gray-300 rounded-md flex items-center justify-center">
+        <img src="b.jpeg" alt="Product 1" class="max-h-full max-w-full object-contain p-4">
+      </div>
+      <div class="flex-1 flex flex-col gap-4">
+        <div>
+          <p class="text-xs text-gray-500">Sponsored</p>
+          <h2 class="text-sm font-semibold leading-tight">Dabur Amla Hair Oil 63ml</h2>
+          <p class="text-sm text-orange-500 mt-1 font-semibold">4.3 ★★★★☆ <span class="text-gray-500">(17K)</span></p>
+          <p class="text-lg font-bold mt-1">₹20 <span class="text-sm text-gray-500">(₹5.98/count) M.R.P: <s>₹20</s> (Free 40 % Extra )</span></p>
+          <p class="text-sm text-gray-700 mt-1">45 Minutes Delivery</p>
+        </div>
+        <button class="bg-yellow-400 text-black font-bold rounded py-2 px-4 w-fit" onclick="addToCart('QUARANT Melt Blown - SMMS Fabric 3 Ply Disposable Face', 299)">Add to cart</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div>
+<!-- Section 4 -->
+<div class="mt-8 bg-[#fffbea] p-4 rounded">
+  <h2 class="text-lg font-bold mb-2">Popular Products</h2>
+  <div class="flex overflow-x-auto space-x-4 md:grid md:grid-cols-2 md:space-x-0 md:gap-4">
+    
+    <!-- Card Example -->
+    <div class="bg-white shadow-sm rounded-md p-2 min-w-[250px] md:min-w-0 flex-shrink-0">
+      <div class="w-full h-40 bg-gray-100 border border-gray-300 rounded-md flex items-center justify-center">
+        <img src="adi.png" alt="Surf Excel" class="h-36 object-contain">
+      </div>
+      <h3 class="text-sm font-semibold mt-2">Surf Excel 3-in-1 Smart Shots Liquid Detergent</h3>
+      <p class="text-orange-500 text-sm font-semibold">★★★★★ <span class="text-gray-600 font-normal">2,431</span></p>
+      <p class="text-xs text-gray-500">3K+ bought in past month</p>
+      <p class="text-red-600 font-bold text-sm">-20% ₹420 <span class="text-xs text-gray-500">(₹15.00 / count)</span></p>
+      <p class="text-xs text-gray-500">M.R.P: <s>₹525.00</s></p>
+      <button class="bg-yellow-400 text-black font-bold rounded w-full mt-2 py-2"onclick="addToCart('QUARANT Melt Blown - SMMS Fabric 3 Ply Disposable Face', 299)">Add to cart</button>
+    </div>
+
+        <!-- Card Example -->
+    <div class="bg-white shadow-sm rounded-md p-2 min-w-[250px] md:min-w-0 flex-shrink-0">
+      <div class="w-full h-40 bg-gray-100 border border-gray-300 rounded-md flex items-center justify-center">
+        <img src="adi.png" alt="Surf Excel" class="h-36 object-contain">
+      </div>
+      <h3 class="text-sm font-semibold mt-2">Surf Excel 3-in-1 Smart Shots Liquid Detergent</h3>
+      <p class="text-orange-500 text-sm font-semibold">★★★★★ <span class="text-gray-600 font-normal">2,431</span></p>
+      <p class="text-xs text-gray-500">3K+ bought in past month</p>
+      <p class="text-red-600 font-bold text-sm">-20% ₹420 <span class="text-xs text-gray-500">(₹15.00 / count)</span></p>
+      <p class="text-xs text-gray-500">M.R.P: <s>₹525.00</s></p>
+      <button class="bg-yellow-400 text-black font-bold rounded w-full mt-2 py-2"onclick="addToCart('QUARANT Melt Blown - SMMS Fabric 3 Ply Disposable Face', 299)">Add to cart</button>
+    </div>
+
+
+        <!-- Card Example -->
+    <div class="bg-white shadow-sm rounded-md p-2 min-w-[250px] md:min-w-0 flex-shrink-0">
+      <div class="w-full h-40 bg-gray-100 border border-gray-300 rounded-md flex items-center justify-center">
+        <img src="adi.png" alt="Surf Excel" class="h-36 object-contain">
+      </div>
+      <h3 class="text-sm font-semibold mt-2">Surf Excel 3-in-1 Smart Shots Liquid Detergent</h3>
+      <p class="text-orange-500 text-sm font-semibold">★★★★★ <span class="text-gray-600 font-normal">2,431</span></p>
+      <p class="text-xs text-gray-500">3K+ bought in past month</p>
+      <p class="text-red-600 font-bold text-sm">-20% ₹420 <span class="text-xs text-gray-500">(₹15.00 / count)</span></p>
+      <p class="text-xs text-gray-500">M.R.P: <s>₹525.00</s></p>
+      <button class="bg-yellow-400 text-black font-bold rounded w-full mt-2 py-2"onclick="addToCart('QUARANT Melt Blown - SMMS Fabric 3 Ply Disposable Face', 299)">Add to cart</button>
+    </div>
+</div>
+</div>
+</div>
+
+ <br>
+    <!-- Footer -->
+    <footer id="contact" class="gradient-bg text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <!-- About -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">SuperMart</h3>
+                    <p class="mb-4">Your one-stop shop for all daily needs with best quality and prices from A to Z.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="bg-white text-purple-600 rounded-full w-10 h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="#" class="bg-white text-purple-600 rounded-full w-10 h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="#" class="bg-white text-purple-600 rounded-full w-10 h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="#" class="bg-white text-purple-600 rounded-full w-10 h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:underline">Home</a></li>
+                        <li><a href="#" class="hover:underline">About Us</a></li>
+                        <li><a href="#" class="hover:underline">Products</a></li>
+                        <li><a href="#" class="hover:underline">Offers</a></li>
+                        <li><a href="#" class="hover:underline">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Categories -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Categories</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:underline">Grocery</a></li>
+                        <li><a href="#" class="hover:underline">Electronics</a></li>
+                        <li><a href="#" class="hover:underline">Fashion</a></li>
+                        <li><a href="#" class="hover:underline">Home & Kitchen</a></li>
+                        <li><a href="#" class="hover:underline">Beauty</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Contact Us</h3>
+                    <address class="not-italic">
+                        <p class="mb-2">MULTI MART STORE , 335512</p>
+                        <p class="mb-2">Email: deepuvarietystore873@gmail.com</p>
+                        <p>Phone: +91 89556 22801</p>
+                        <p>Phone: +91 88529 09296</p>
+                    </address>
+                </div>
+            </div>
+            
+            <div class="border-t border-white border-opacity-20 pt-8 text-center">
+                <p>© 2023 SuperMart. All Rights Reserved.</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+
+          <!-- BOTTOM NAVIGATION FIXED MENU -->
+  <div class="fixed bottom-0 left-0 right-0 bg-white shadow-md border-t flex justify-around items-center py-2 z-50">
+    <a href="index.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M4 10v10h5v-6h6v6h5V10" />
+      </svg>
+      Home
+    </a>
+    <a href="cart.html" class="relative flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l1.5 6H15l1.5-6M6 19a1 1 0 11-2 0 1 1 0 012 0zm12 0a1 1 0 11-2 0 1 1 0 012 0z" />
+      </svg>
+      Cart
+      <span id="cart-count-bottom" class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-1.5"></span>
+    </a>
+    <a href="orders.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12 h6m-6 4h6m-6-8h6m2-4h2a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+      </svg>
+      Orders
+    </a>
+    <a href="menu.html" class="flex flex-col items-center text-xs text-gray-600 hover:text-purple-600">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      Menu
+    </a>
+  </div>
+
+
+  <script>
+    function addToCart(name, price) {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const index = cart.findIndex(item => item.name === name);
+
+      if (index !== -1) {
+        cart[index].quantity += 1;
+      } else {
+        cart.push({ name, price, quantity: 1 });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCount();
+      showNotification();
+    }
+
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+      document.querySelectorAll("#cart-count")
+        .forEach(span => span.textContent = total);
+    }
+
+    function showNotification() {
+      const note = document.getElementById('notification');
+      note.style.display = 'block';
+      setTimeout(() => note.style.display = 'none', 2000);
+    }
+
+    function searchProducts() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const grid = document.getElementById('searchResultsContainer');
+      const items = grid.getElementsByClassName('product');
+      let found = false;
+
+      for (let card of items) {
+        const name = card.querySelector('h4').textContent.toLowerCase();
+        const match = name.includes(query);
+        card.style.display = match ? 'block' : 'none';
+        if (match) found = true;
+      }
+
+      document.getElementById('searchResults').style.display = found ? 'block' : 'none';
+    }
+  </script>
+  
+<script>
+  let currentSlide = 0;
+  const slides = document.querySelectorAll(".slider-image"); // Select all images in the slider
+  const mainSlider = document.querySelector(".slider-images"); // Select the container of the images
+
+  function showSlide(index) {
+    const offset = index * -100; // Calculate the offset for the current slide
+    mainSlider.style.transform = `translateX(${offset}%)`; // Move the slider
+  }
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % slides.length; // Move to the next slide
+    showSlide(currentSlide); // Show the current slide
+  }
+
+  setInterval(nextSlide, 3000); // Auto slide every 3 seconds
+</script>
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
